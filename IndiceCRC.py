@@ -360,8 +360,6 @@ BaseMovilesMunicipio['departamento']=BaseMovilesMunicipio['departamento'].replac
                                                                         'SAN ANDRES AND PROVIDENCIA':'SAN ANDRES','SANTANDER DEPARTMENT':'SANTANDER',
                                                                         'BOGOTA':'BOGOTA, D.C.','NARINO':'NARIÑO'})
 
-
-
 #@st.cache(allow_output_mutation=True)
 def MunicipiosColombia():
     gdf= gpd.read_file("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/co_2018_MGN_MPIO_POLITICO.geojson")
@@ -378,14 +376,6 @@ def data_MuniColombia():
         Muni = json.loads(url.read().decode())
     return Muni
 Colombian_MUNI=data_MuniColombia()  
-
-# Colombian_MUNI=json.load(open("co_2018_MGN_MPIO_POLITICO.geojson", 'r'))
-# gdf=gpd.read_file("co_2018_MGN_MPIO_POLITICO.geojson")
-# gdf=gdf.rename(columns={'MPIO_CNMBR':'municipio','MPIO_CCNCT':'ID_MUNICIPIO','DPTO_CNMBR':'departamento'})
-# gdf['municipio']=gdf['municipio'].apply(lambda x:unidecode.unidecode(x))
-# gdf['departamento']=gdf['departamento'].apply(lambda x:unidecode.unidecode(x))
-# gdf['departamento']=gdf['departamento'].replace({'ARCHIPIELAGO DE SAN ANDRES, PROVIDENCIA Y SANTA CATALINA':'SAN ANDRES','NARINO':'NARIÑO'})
-# gdf['municipio']=gdf['municipio'].replace('BOGOTA, D.C.','BOGOTA')
 Proveedores_fijo=['All Providers Combined','Claro','Tigo','Movistar','ETB','DIRECTV']    
 Proveedores_moviles=['All Providers Combined','Movistar','Claro','Tigo','Avantel','WOM']
 Colores_proveedores={'All Providers Combined':'black','Claro':'rgb(226,36,46)','Tigo':'rgb(57,107,80)','Movistar':'rgb(102,206,0)','ETB':'rgb(11,52,104)',
@@ -396,7 +386,7 @@ st.markdown(Estilo_css+Barra_superior,unsafe_allow_html=True)
 st.sidebar.markdown(r"""<b style="font-size: 26px;text-align:center;color:white"><center>Índice de calidad<br>CRC</center></b> """,unsafe_allow_html=True)
 st.sidebar.markdown(r"""<hr style='border:1px solid white'>""",unsafe_allow_html=True)
 st.sidebar.markdown("""<b style='color:white'>Índice</b>""", unsafe_allow_html=True)
-select_seccion = st.sidebar.selectbox('Escoja la sección de interés',
+select_seccion = st.sidebar.selectbox('',
                                     ['Manual','Índice de calidad'])   
 
 
@@ -501,7 +491,7 @@ if select_seccion=='Índice de calidad':
             puebaBaseFijosMuni['ID_MUNICIPIO']=puebaBaseFijosMuni['ID_MUNICIPIO'].astype('str')
             with col2:
                 select_periodoFijo=st.selectbox('Escoja el periodo',puebaBaseFijosMuni['periodo'].unique().tolist()[::-1],0)
-            color_mapa={'Velocidad de descarga':'RdYlGn','Velocidad de carga':'RdYlGn','Latencia':'RdYlGn_r','Jitter':'RdYlGn_r','Índice calidad':'Reds_r'}    
+            color_mapa={'Velocidad de descarga':'RdYlGn','Velocidad de carga':'RdYlGn','Latencia':'RdYlGn_r','Jitter':'RdYlGn_r','Índice calidad':'RdYlGn'}    
             colombia_map = folium.Map(width='100%',location=[4.570868, -74.297333], zoom_start=5,tiles='cartodbpositron')
             tiles = ['stamenwatercolor', 'cartodbpositron', 'openstreetmap', 'stamenterrain']
             for tile in tiles:
@@ -547,9 +537,6 @@ if select_seccion=='Índice de calidad':
             col1,col2,col3=st.columns([1,2,1])
             with col2:
                 folium_static(colombia_map,width=480) 
-
-
-
        
     if select_servicio=='Servicios móviles':
         st.markdown("<center><h2>Servicios móviles</h2></center>",unsafe_allow_html=True)        
@@ -607,4 +594,61 @@ if select_seccion=='Índice de calidad':
             dfMovilMuni2=dfMovilMuni[['periodo','municipio','departamento','provider',dict_parametros[ParametroMovil]]]
             col1,col2=st.columns(2)
             st.plotly_chart(lineatiempoMuniMovil(dfMovilMuni2[dfMovilMuni2['provider'].isin(Proveedores_moviles)],dict_parametros[ParametroMovil]),use_container_width=True)
+
+        if select_dimAnalisis=='Análisis por operador':        
+            col1,col2=st.columns([4,1])
+            with col1:
+                select_operadorMovil=st.radio('Seleccione el operador',Proveedores_moviles,horizontal=True)
+            puebaBaseMovilesMuni['ID_MUNICIPIO']=puebaBaseMovilesMuni['ID_MUNICIPIO'].astype('str')
+            with col2:
+                select_periodoMovil=st.selectbox('Escoja el periodo',puebaBaseMovilesMuni['periodo'].unique().tolist()[::-1],0)
+            if puebaBaseMovilesMuni[(puebaBaseMovilesMuni['periodo']==select_periodoMovil)&(puebaBaseMovilesMuni['provider']==select_operadorMovil)].empty==True:
+                st.info('Este operador no tiene valores para el periodo seleccionado')
+            else:        
+                color_mapa={'Velocidad de descarga':'RdYlGn','Velocidad de carga':'RdYlGn','Latencia':'RdYlGn_r','Jitter':'RdYlGn_r','Índice calidad':'RdYlGn'}    
+                colombia_map = folium.Map(width='100%',location=[4.570868, -74.297333], zoom_start=5,tiles='cartodbpositron')
+                tiles = ['stamenwatercolor', 'cartodbpositron', 'openstreetmap', 'stamenterrain']
+                for tile in tiles:
+                    folium.TileLayer(tile).add_to(colombia_map)
+                choropleth=folium.Choropleth(
+                    geo_data=Colombian_MUNI,
+                    data=puebaBaseMovilesMuni[(puebaBaseMovilesMuni['periodo']==select_periodoMovil)&(puebaBaseMovilesMuni['provider']==select_operadorMovil)],
+                    columns=['ID_MUNICIPIO',dict_parametros[ParametroMovil]],
+                    key_on='feature.properties.MPIO_CCNCT',
+                    fill_color=color_mapa[ParametroMovil], 
+                    fill_opacity=0.9, 
+                    line_opacity=0.9,
+                    legend_name=ParametroMovil+' '+dict_parametros_unidad[ParametroMovil]+' '+select_periodoMovil,
+                    smooth_factor=0).add_to(colombia_map)
+                # Adicionar nombres del departamento
+                style_function = "font-size: 15px; font-weight: bold"
+                choropleth.geojson.add_child(
+                    folium.features.GeoJsonTooltip(['MPIO_CNMBR'], style=style_function, labels=False))
+                folium.LayerControl().add_to(colombia_map)
+
+                #Adicionar valores 
+                style_function = lambda x: {'fillColor': '#ffffff', 
+                                            'color':'#000000', 
+                                            'fillOpacity': 0.1, 
+                                            'weight': 0.1}
+                highlight_function = lambda x: {'fillColor': '#000000', 
+                                                'color':'#000000', 
+                                                'fillOpacity': 0.50, 
+                                                'weight': 0.1}
+                NIL = folium.features.GeoJson(
+                    data = puebaBaseMovilesMuni[(puebaBaseMovilesMuni['periodo']==select_periodoMovil)&(puebaBaseMovilesMuni['provider']==select_operadorMovil)],
+                    style_function=style_function, 
+                    control=False,
+                    highlight_function=highlight_function, 
+                    tooltip=folium.features.GeoJsonTooltip(
+                        fields=['municipio','ID_MUNICIPIO','departamento',dict_parametros[ParametroMovil]],
+                        aliases=['Municipio','ID','departamento',ParametroMovil],
+                        style=("background-color: white; color: #333333; font-family: arial; font-size: 12px; padding: 10px;") 
+                    )
+                )
+                colombia_map.add_child(NIL)
+                colombia_map.keep_in_front(NIL)
+                col1,col2,col3=st.columns([1,2,1])
+                with col2:
+                    folium_static(colombia_map,width=480) 
         
