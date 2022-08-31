@@ -417,8 +417,10 @@ if select_seccion=='Manual':
         col1,col2=st.columns(2)
         with col1:
             st.markdown("<p style='font-size:11px;text-align:center'><b>Tabla 1:</b> Valores de referencia para el cálculo del ICE para el servicio de Internet móvil</p>",unsafe_allow_html=True)
+            st.image("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/ICE%20Movil.png")
         with col2:
             st.markdown("<p style='font-size:11px;text-align:center'><b>Tabla 2:</b> Valores de referencia para el cálculo del ICE para el servicio de Internet fijo</p>",unsafe_allow_html=True)
+            st.image("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/ICE%20Fijo.png")
         
 if select_seccion=='Índice de calidad':
     st.title("Índice de calidad CRC") 
