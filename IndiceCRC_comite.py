@@ -47,10 +47,8 @@ Estilo_css="""<style type="text/css">
         font-family: Poppins;
         font-size:1.60rem;
         color: black;
-        position:fixed;
         width:100%;
         z-index:9999999;
-        top:80px;
         left:0;
     }
     h2{
@@ -77,9 +75,6 @@ Estilo_css="""<style type="text/css">
         padding: 0px;
         font-size: 36px;
         font-weight: 700;
-    }
-    .css-1wrcr25{
-        margin-top:135px;
     }
     .e16nr0p31 {display:none}
     .css-y3whyl, .css-xqnn38 {background-color:#ccc}
@@ -374,7 +369,7 @@ Proveedores_moviles=['All Providers Combined','Movistar','Claro','Tigo','Avantel
 Colores_proveedores={'All Providers Combined':'black','Claro':'rgb(226,36,46)','Tigo':'rgb(57,107,80)','Movistar':'rgb(102,206,0)','ETB':'rgb(11,52,104)',
                           'DIRECTV':'rgb(0,147,209)','Avantel':'rgb(255,0,156)','WOM':'rgb(69,7,82)'}
     
-st.markdown(Estilo_css+Barra_superior,unsafe_allow_html=True)
+st.markdown(Estilo_css,unsafe_allow_html=True)
 
 hide_dataframe_row_index = """
             <style>
@@ -386,6 +381,7 @@ hide_dataframe_row_index = """
 # Inject CSS with Markdown
 st.markdown(hide_dataframe_row_index, unsafe_allow_html=True)
 
+st.markdown("<center><h2>Índice de calidad de la experiencia</h2></center>",unsafe_allow_html=True)
 select_seccion = st.selectbox('Escoja la sección del reporte',['Definición','Índice de calidad'])   
 
 
@@ -495,9 +491,9 @@ de 0 % y un máximo de 100 % para Internet móvil. La información de este pará
 """
 
 if select_seccion=='Definición':
+    st.markdown("")
     st.title("Definición del índice de calidad CRC")       
     st.markdown(r"""<hr>""",unsafe_allow_html=True)
-    st.markdown("<center><h2>Índice de calidad de la experiencia</h2></center>",unsafe_allow_html=True)
     st.markdown("")
     st.markdown(Intro_Sec1,unsafe_allow_html=True)
     st.markdown(Intro_Sec2,unsafe_allow_html=True)
@@ -539,6 +535,7 @@ if select_seccion=='Definición':
         st.image("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/ICE%20Fijo2.png")
         
 if select_seccion=='Índice de calidad':
+    st.markdown("")
     st.title("Índice de calidad CRC") 
     select_servicio=st.radio('Seleccione un servicio para el cálculo del indicador',['Internet fijo','Internet móvil'],horizontal=True)
     st.markdown(r"""<hr style='border:1px solid #FE9D82'>""",unsafe_allow_html=True)
@@ -572,10 +569,10 @@ if select_seccion=='Índice de calidad':
         Compara_Ciudad=Compara_Ciudad.sort_values(by=['posición_x'],ascending=False)
         
         fig_ComparaCiud=make_subplots(rows=1,cols=2)
-        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[:12]['municipio'],x=Compara_Ciudad.iloc[:12]['Indice_CRC_x'],orientation='h',text=Compara_Ciudad[:12]['posición_x'],name='2021-12',textangle=0,textposition='outside',marker_color='#2bc3c3',hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'Indice CRC: %{x:.3f}'+'<br>'+'Periodo: 2021-12'+'<br>'+'Posición:%{text}'),row=1,col=2)
-        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[:12]['municipio'],x=Compara_Ciudad.iloc[:12]['Indice_CRC_y'],orientation='h',text=Compara_Ciudad[:12]['posición_y'],name=select_periodoComp,textangle=0,textposition='outside',marker_color='#4949E7',hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'Indice CRC: %{x:.3f}'+'<br>'+'Periodo:'+select_periodoComp+'<br>'+'Posición:%{text}'),row=1,col=2)
-        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[12:]['municipio'],x=Compara_Ciudad.iloc[12:]['Indice_CRC_x'],orientation='h',text=Compara_Ciudad[12:]['posición_x'],name='2021-12',textangle=0,textposition='outside',marker_color='#2bc3c3',showlegend=False,hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'Indice CRC: %{x:.3f}'+'<br>'+'Periodo: 2021-12'+'<br>'+'Posición:%{text}'),row=1,col=1)
-        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[12:]['municipio'],x=Compara_Ciudad.iloc[12:]['Indice_CRC_y'],orientation='h',text=Compara_Ciudad[12:]['posición_y'],name=select_periodoComp,textangle=0,textposition='outside',marker_color='#4949E7',showlegend=False,hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'Indice CRC: %{x:.3f}'+'<br>'+'Periodo:'+select_periodoComp+'<br>'+'Posición:%{text}'),row=1,col=1)
+        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[:12]['municipio'],x=Compara_Ciudad.iloc[:12]['Indice_CRC_x'],orientation='h',text=Compara_Ciudad[:12]['posición_x'],name='2021-12',textangle=0,textposition='outside',marker_color='#2bc3c3',hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'Indice CRC: %{x:.2f}'+'<br>'+'Periodo: 2021-12'+'<br>'+'Posición:%{text}'),row=1,col=2)
+        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[:12]['municipio'],x=Compara_Ciudad.iloc[:12]['Indice_CRC_y'],orientation='h',text=Compara_Ciudad[:12]['posición_y'],name=select_periodoComp,textangle=0,textposition='outside',marker_color='#4949E7',hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'Indice CRC: %{x:.2f}'+'<br>'+'Periodo:'+select_periodoComp+'<br>'+'Posición:%{text}'),row=1,col=2)
+        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[12:]['municipio'],x=Compara_Ciudad.iloc[12:]['Indice_CRC_x'],orientation='h',text=Compara_Ciudad[12:]['posición_x'],name='2021-12',textangle=0,textposition='outside',marker_color='#2bc3c3',showlegend=False,hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'Indice CRC: %{x:.2f}'+'<br>'+'Periodo: 2021-12'+'<br>'+'Posición:%{text}'),row=1,col=1)
+        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[12:]['municipio'],x=Compara_Ciudad.iloc[12:]['Indice_CRC_y'],orientation='h',text=Compara_Ciudad[12:]['posición_y'],name=select_periodoComp,textangle=0,textposition='outside',marker_color='#4949E7',showlegend=False,hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'Indice CRC: %{x:.2f}'+'<br>'+'Periodo:'+select_periodoComp+'<br>'+'Posición:%{text}'),row=1,col=1)
         fig_ComparaCiud.update_yaxes(tickfont=dict(family='Poppins', color='black', size=12),titlefont_size=16, title_text=None)
         fig_ComparaCiud.update_xaxes(tickangle=0,tickfont=dict(family='Poppins', color='black', size=16),title_text='Índice de calidad (%)'
         ,zeroline=True,linecolor = 'rgba(192, 192, 192, 0.8)',zerolinewidth=2,titlefont_size=16)
@@ -704,10 +701,10 @@ if select_seccion=='Índice de calidad':
         Compara_Ciudad2=Compara_Ciudad2.sort_values(by=['Indice CRC 2021-12'],ascending=False)
         
         fig_ComparaCiud=make_subplots(rows=1,cols=2)
-        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[:12]['municipio'],x=Compara_Ciudad.iloc[:12]['Indice_CRC_x'],orientation='h',text=Compara_Ciudad[:12]['posición_x'],name='2021-12',textangle=0,textposition='outside',marker_color='#2bc3c3',hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'Indice CRC: %{x:.3f}'+'<br>'+'Periodo: 2021-12'+'<br>'+'Posición:%{text}'),row=1,col=2)
-        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[:12]['municipio'],x=Compara_Ciudad.iloc[:12]['Indice_CRC_y'],orientation='h',text=Compara_Ciudad[:12]['posición_y'],name=select_periodoComp,textangle=0,textposition='outside',marker_color='#4949E7',hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'Indice CRC: %{x:.3f}'+'<br>'+'Periodo:'+select_periodoComp+'<br>'+'Posición:%{text}'),row=1,col=2)
-        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[12:]['municipio'],x=Compara_Ciudad.iloc[12:]['Indice_CRC_x'],orientation='h',text=Compara_Ciudad[12:]['posición_x'],name='2021-12',textangle=0,textposition='outside',marker_color='#2bc3c3',showlegend=False,hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'Indice CRC: %{x:.3f}'+'<br>'+'Periodo: 2021-12'+'<br>'+'Posición:%{text}'),row=1,col=1)
-        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[12:]['municipio'],x=Compara_Ciudad.iloc[12:]['Indice_CRC_y'],orientation='h',text=Compara_Ciudad[12:]['posición_y'],name=select_periodoComp,textangle=0,textposition='outside',marker_color='#4949E7',showlegend=False,hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'Indice CRC: %{x:.3f}'+'<br>'+'Periodo:'+select_periodoComp+'<br>'+'Posición:%{text}'),row=1,col=1)
+        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[:12]['municipio'],x=Compara_Ciudad.iloc[:12]['Indice_CRC_x'],orientation='h',text=Compara_Ciudad[:12]['posición_x'],name='2021-12',textangle=0,textposition='outside',marker_color='#2bc3c3',hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'Indice CRC: %{x:.2f}'+'<br>'+'Periodo: 2021-12'+'<br>'+'Posición:%{text}'),row=1,col=2)
+        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[:12]['municipio'],x=Compara_Ciudad.iloc[:12]['Indice_CRC_y'],orientation='h',text=Compara_Ciudad[:12]['posición_y'],name=select_periodoComp,textangle=0,textposition='outside',marker_color='#4949E7',hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'Indice CRC: %{x:.2f}'+'<br>'+'Periodo:'+select_periodoComp+'<br>'+'Posición:%{text}'),row=1,col=2)
+        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[12:]['municipio'],x=Compara_Ciudad.iloc[12:]['Indice_CRC_x'],orientation='h',text=Compara_Ciudad[12:]['posición_x'],name='2021-12',textangle=0,textposition='outside',marker_color='#2bc3c3',showlegend=False,hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'Indice CRC: %{x:.2f}'+'<br>'+'Periodo: 2021-12'+'<br>'+'Posición:%{text}'),row=1,col=1)
+        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[12:]['municipio'],x=Compara_Ciudad.iloc[12:]['Indice_CRC_y'],orientation='h',text=Compara_Ciudad[12:]['posición_y'],name=select_periodoComp,textangle=0,textposition='outside',marker_color='#4949E7',showlegend=False,hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'Indice CRC: %{x:.2f}'+'<br>'+'Periodo:'+select_periodoComp+'<br>'+'Posición:%{text}'),row=1,col=1)
         fig_ComparaCiud.update_yaxes(tickfont=dict(family='Poppins', color='black', size=12),titlefont_size=16, title_text=None)
         fig_ComparaCiud.update_xaxes(tickangle=0,tickfont=dict(family='Poppins', color='black', size=16),title_text='Índice de calidad (%)'
         ,zeroline=True,linecolor = 'rgba(192, 192, 192, 0.8)',zerolinewidth=2,titlefont_size=16)
