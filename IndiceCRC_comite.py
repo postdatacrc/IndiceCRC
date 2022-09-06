@@ -619,27 +619,18 @@ if select_seccion=='Resultados':
         
         gbfijo=GridOptionsBuilder.from_dataframe(Compara_Ciudad2)
         gbfijo.configure_pagination(enabled=True,paginationAutoPageSize=False,paginationPageSize=15)
-        cols_Fijo=[]
+        cols_Fijo=['ICE 2021-12']
         cellstyle_jscode = JsCode("""
         function(params){
-            if (params.value == '0') {
+            if (params.value > 0) {
                 return {
-                    'color': 'black', 
+                    'color': 'black',
+                    'font-weight':700    
                 }
             }
-            if (params.value > '0') {
-                return {
-                    'color': 'green', 
-                }
-            }            
-            if (params.value < '0') {
-                return {
-                    'color': 'red', 
-                }
-            }               
         }
         """)
-        #gbfijo.configure_columns(cols_Fijo,cellStyle=cellstyle_jscode)
+        gbfijo.configure_columns(cols_Fijo,cellStyle=cellstyle_jscode)
         grid_options = gbfijo.build()
         
         def make_pretty(styler):
@@ -691,7 +682,7 @@ if select_seccion=='Resultados':
         BaseMovilesMunicipio=BaseMovilesMunicipio[(BaseMovilesMunicipio['provider']=='All Providers Combined')&(BaseMovilesMunicipio['municipio'].isin(List_capitales))]
         BaseMovilesMunicipio['prueba']=BaseMovilesMunicipio['municipio'].apply(capitales_Dep)
         BaseMovilesMunicipio=BaseMovilesMunicipio.loc[(BaseMovilesMunicipio['departamento'] == BaseMovilesMunicipio['prueba'])]
-        BaseMovilesMunicipio['Indice_CRC']=round(BaseMovilesMunicipio['Indice_CRC'],2)
+        #BaseMovilesMunicipio['Indice_CRC']=round(BaseMovilesMunicipio['Indice_CRC'],2)
         BaseMovilesMunicipio['municipio']=BaseMovilesMunicipio['municipio'].replace({'SAN JOSE DEL GUAVIARE':'SJ. GUAVIARE'})
         BaseMovilesMunicipio=BaseMovilesMunicipio.sort_values(by=['periodo'],ascending=False)
         Ciudades_capitales=sorted(BaseMovilesMunicipio['municipio'].unique().tolist())
@@ -722,7 +713,8 @@ if select_seccion=='Resultados':
         Compara_Ciudad2=Compara_Ciudad2.rename(columns={'periodo_x':'periodo 2','Indice_CRC_x':'ICE 2021-12','posición_x':'pos periodo 2',
         'periodo_y':'periodo 1','Indice_CRC_y':'ICE '+select_periodoComp,'posición_y':'pos periodo 2','Cambio_indice':'Cambio ICE'})
         Compara_Ciudad2=Compara_Ciudad2[['municipio','Vel descarga 2021-12','Vel carga 2021-12','Latencia 2021-12','Jitter 2021-12','Tasa perd. paq 2021-12','ICE 2021-12','ICE '+select_periodoComp,'Cambio ICE','Cambio posición']]
-        Compara_Ciudad2=Compara_Ciudad2.round(1)
+        Compara_Ciudad2['Tasa perd. paq 2021-12']=Compara_Ciudad2['Tasa perd. paq 2021-12'].round(5)
+        Compara_Ciudad2[['ICE 2021-12','ICE '+select_periodoComp]]=Compara_Ciudad2[['ICE 2021-12','ICE '+select_periodoComp]].round(1)
         Compara_Ciudad2=Compara_Ciudad2.sort_values(by=['ICE 2021-12'],ascending=False)
         
         fig_ComparaCiud=make_subplots(rows=1,cols=2)
@@ -755,14 +747,14 @@ if select_seccion=='Resultados':
         BaseMovilesMunicipio2=BaseMovilesMunicipio.copy()[['periodo','municipio','departamento','Indice_CRC']]
 
         gbmovil=GridOptionsBuilder.from_dataframe(Compara_Ciudad2)
-        gbmovil.configure_pagination(enabled=True)
-        cols_Movil=['Cambio posición']
+        gbmovil.configure_pagination(enabled=True,paginationAutoPageSize=False,paginationPageSize=15)
+        cols_Movil=['ICE 2021-12']
         cellstyle_jscode = JsCode("""
         function(params){
-            if (params.value == 'maxInd2112') {
+            if (params.value > 0) {
                 return {
-                    'color': 'black', 
-                    'backgroundColor': 'orange',
+                    'color': 'black',
+                    'font-weight':700    
                 }
             }
         }
