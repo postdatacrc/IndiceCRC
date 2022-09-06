@@ -183,7 +183,7 @@ Barra_superior="""
 ##Definiciones Móvil
 
 def DownloadMOVIL(x):
-    min_down=5;max_down=25;weight_down=0.375
+    min_down=5;max_down=50;weight_down=0.35
     if x>max_down:
         y=100*weight_down
     elif x<min_down:
@@ -192,7 +192,7 @@ def DownloadMOVIL(x):
         y= y=(x/max_down)*100*weight_down
     return y
 def UploadMOVIL(x):
-    min_up=2.6;max_up=12.5;weight_up=0.258
+    min_up=2.6;max_up=15;weight_up=0.25
     if x>max_up:
         y=100*weight_up
     elif x<min_up:
@@ -201,7 +201,7 @@ def UploadMOVIL(x):
         y= y=(x/max_up)*100*weight_up
     return y
 def LatencyMOVIL(x):
-    min_Lat=25;max_Lat=100;weight_Lat=0.184
+    min_Lat=25;max_Lat=100;weight_Lat=0.20
     if x>=max_Lat:
         y=0
     elif x<=min_Lat:
@@ -210,7 +210,7 @@ def LatencyMOVIL(x):
         y=100*(max_Lat-x)*weight_Lat/(max_Lat-min_Lat)
     return y
 def JitterMOVIL(x):
-    min_Jit=0;max_Jit=50;weight_Jit=0.09
+    min_Jit=0;max_Jit=50;weight_Jit=0.1
     if x>=max_Jit:
         y=0
     elif x<=min_Jit:
@@ -219,14 +219,14 @@ def JitterMOVIL(x):
         y=100*(max_Jit-x)*weight_Jit/(max_Jit-min_Jit)
     return y
 def AvgPacket(x):
-    weight_AvgPack=0.093
+    weight_AvgPack=0.1
     y=y=100*(100-x)*weight_AvgPack/(100)
     return y
 
 ## Definiciones Fijos
 
 def DownloadFIJO(x):
-    min_down=25;max_down=500;weight_down=0.377
+    min_down=25;max_down=500;weight_down=0.38
     if x>max_down:
         y=100*weight_down
     elif x<min_down:
@@ -235,7 +235,7 @@ def DownloadFIJO(x):
         y= y=(x/max_down)*100*weight_down
     return y
 def UploadFIJO(x):
-    min_up=5;max_up=500;weight_up=0.273
+    min_up=5;max_up=500;weight_up=0.27
     if x>max_up:
         y=100*weight_up
     elif x<min_up:
@@ -270,7 +270,7 @@ def lineatiempoMuni(df,yvalue):
         hovertemplate =
             '<br><b>Operador</b>:<br><extra></extra>'+proveedor+
             '<br><b>Periodo</b>: %{x}<br>'+                         
-            ParametroFijo+'-'+dict_parametros_unidad[ParametroFijo]+': %{y:.3f}<br>'))
+            ParametroFijo+'-'+dict_parametros_unidad[ParametroFijo]+': %{y:.2f}<br>'))
     fig.update_yaxes(tickfont=dict(family='Poppins', color='black', size=16),titlefont_size=16, title_text=ParametroFijo+' '+dict_parametros_unidad[ParametroFijo], row=1, col=1)
     fig.update_xaxes(tickangle=0, tickfont=dict(family='Poppins', color='black', size=14),title_text='Fecha (mes/año)',row=1, col=1
     ,zeroline=True,linecolor = 'rgba(192, 192, 192, 0.8)',zerolinewidth=2)
@@ -301,7 +301,7 @@ def lineatiempoMuniMovil(df,yvalue):
         hovertemplate =
             '<br><b>Operador</b>:<br><extra></extra>'+proveedor+
             '<br><b>Periodo</b>: %{x}<br>'+                         
-            ParametroMovil+'-'+dict_parametros_unidad[ParametroMovil]+': %{y:.3f}<br>'))
+            ParametroMovil+'-'+dict_parametros_unidad[ParametroMovil]+': %{y:.2f}<br>'))
     fig.update_yaxes(tickfont=dict(family='Poppins', color='black', size=16),titlefont_size=16, title_text=ParametroMovil+' '+dict_parametros_unidad[ParametroMovil], row=1, col=1)
     fig.update_xaxes(tickangle=0, tickfont=dict(family='Poppins', color='black', size=14),title_text='Fecha (mes/año)',row=1, col=1
     ,zeroline=True,linecolor = 'rgba(192, 192, 192, 0.8)',zerolinewidth=2)
@@ -387,7 +387,7 @@ st.sidebar.markdown(r"""<b style="font-size: 26px;text-align:center;color:white"
 st.sidebar.markdown(r"""<hr style='border:1px solid white'>""",unsafe_allow_html=True)
 st.sidebar.markdown("""<b style='color:white'>Índice</b>""", unsafe_allow_html=True)
 select_seccion = st.sidebar.selectbox('',
-                                    ['Manual','Índice de calidad'])   
+                                    ['Definición','Resultados'])   
 
 
 reemplazo_Muni={'SANTA FE DE ANTIOQUIA':'SANTAFE DE ANTIOQUIA','BOGOTA, D.C.':'BOGOTA','CUASPUD CARLOSAMA':'CUASPUD',
@@ -400,35 +400,147 @@ capitales_departamento={'AMAZONAS':'LETICIA','ANTIOQUIA':'MEDELLIN','ARAUCA':'AR
                         'NORTE DE SANTANDER':'CUCUTA','PUTUMAYO':'MOCOA','QUINDIO':'RISARALDA','SAN ANDRES':'SAN ANDRES','SANTANDER':'BUCARAMANGA',
                         'SUCRE':'SINCELEJO','TOLIMA':'IBAGUE','VALLE DEL CAUCA':'CALI','VAUPES':'MITU','VICHADA':'PUERTO CARRENO'}                
 
-if select_seccion=='Manual':
-    st.title("Manual del índice de calidad CRC")   
-    seccion_manual=st.radio('',['Objetivo','Justificación','Metodología'],horizontal=True)
+
+Intro_Sec1=r"""<p style='text-align:justify'> 
+El índice de calidad de la experiencia -ICE- busca dar a conocer el comportamiento de las capitales de departamento del país que cuentan con las mejores 
+condiciones en términos de calidad que experimenta el usuario en el servicio de Internet prestado a través de redes de acceso móvil y fijo.
+</p>
+"""
+
+Intro_Sec2=r"""<p style='text-align:justify'> 
+Teniendo en cuenta lo estipulado en la regulación vigente, la CRC ha estado utilizando la metodología de Crowdsourcing para capturar información de indicadores
+de calidad directamente de los equipos terminales de los usuarios. En ese sentido, y con la finalidad de entregar a los usuarios información técnica de una 
+manera más sencilla, nace la idea de consolidar los parámetros para la construcción de un índice, en aras de facilitar la lectura y entendimiento de la 
+calidad de los servicios que prestan los operados a los usuarios, para este caso, se definirá un índice para la calidad del servicio de Internet móvil y un 
+índice para Internet fijo.
+</p>
+"""
+
+Intro_Sec3=r"""<p style='text-align:justify'>  
+En ese contexto, el reporte técnico ETSI TR 103 559 , analiza la construcción y la metodología de una evaluación comparativa en una medición nacional, 
+considerando aspectos como el área y la población a cubrir, la recopilación y agregación de las mediciones, y la ponderación de los diversos aspectos 
+considerados, con el principal propósito de identificar las mejores prácticas que se deben tener en cuenta a la hora de realizar una evaluación comparativa, 
+de tal manera que esta refleje la verdadera experiencia del usuario.
+</p>
+"""
+
+Intro_Sec4=r"""<p style='text-align:justify'> 
+Considerando las recomendaciones y buenas prácticas contenidas en el mencionado reporte técnico de la ETSI, la CRC diseñó el índice de calidad de la 
+experiencia con el propósito de reducir la asimetría de la información hacia el usuario, de tal manera que pueda tomar decisiones bien informado, respecto de 
+la contratación de los servicios de Internet móvil e Internet fijo. 
+</p>
+"""
+
+Intro_Sec5=r""" <p style='text-align:justify'>
+Adicionalmente, el ICE busca también incentivar la mejora continua de la calidad de los servicios de Internet fijo y móvil que se prestan a los usuarios, 
+considerando para tal efecto los cinco (5) siguientes parámetros:
+<center>
+<ul>
+<li>Velocidad de descarga
+<li>Velocidad de carga
+<li>Latencia
+<li>Jitter
+<li>Tasa de pérdida de paquetes
+</ul>
+</center>
+</p>
+"""
+
+Intro_Sec6=r"""<p style='text-align:justify'>
+Este índice arroja un valor máximo de cien (100) puntos y se calcula de acuerdo con la evaluación de los parámetros antes descritos, definiendo unos valores 
+que permiten la normalización y con la aplicación de unos ponderadores.
+</p>
+"""
+
+Vel_descarga_Info=r"""<p style='text-align:justify'>
+Se entiende como la rapidez con la que se pueden descargar contenidos (documentos, videos, imágenes, audio, etc.), normalmente desde una página Web. A mayor 
+velocidad obtenida en la medición, mayor rapidez en la descarga, y, por lo tanto, mejor experiencia del usuario. La medición de este parámetro se normaliza a 
+un valor de 0 a 100, utilizando para ello un valor mínimo de velocidad de 5 Mbps y un máximo de 25 Mbps en Internet móvil y de 25 Mbps y 500 Mbps en Internet 
+fijo.
+</p>
+"""
+Vel_carga_Info=r"""<p style='text-align:justify'>
+Se entiende como qué tan rápido se envían los datos en dirección desde un dispositivo hacia Internet. Es decir, es la rapidez con la que se pueden subir 
+contenidos (cargar archivos adjuntos al correo, compartir pantalla en una video conferencia, subir imágenes a redes sociales, etc.) a Internet. A mayor 
+velocidad obtenida en la medición, mayor rapidez en la carga, por lo tanto, mejor es la experiencia del usuario. La medición de este parámetro se normaliza a 
+un valor de 0 a 100, utilizando para ello un valor mínimo de velocidad de 2,6 Mbps y un máximo de 12,5 Mbps en Internet móvil y de 5 Mbps y 500 Mbps en Internet
+fijo.
+</p>
+"""
+Lat_Info=r"""<p style='text-align:justify'>
+Sirve para medir qué tan rápido viajan los datos desde un punto de origen al destino. Por ejemplo, en los videojuegos en línea, cuando hay alta latencia se 
+tarda en refrescar la pantalla con respecto a la velocidad de lo que ocurre en el juego. Por tal motivo, a latencias más bajas, la experiencia del usuario es
+mejor. La latencia se mide en milisegundos (ms). La medición de este parámetro se normaliza a un valor de 0 a 100, utilizando para ello un valor mínimo de 
+latencia de 25 ms y un máximo de 100 ms, tanto para Internet móvil como para el fijo.
+</p>
+"""
+Jitter_Info=r"""<p style='text-align:justify'>
+Es una medida en el tiempo de la fluctuación en la entrega y recepción de paquetes. Este comportamiento puede ser percibido cuando en las llamadas (de audio o 
+video) se presentan interrupciones. Esto se traduce en que a valores bajos (en milisegundos) de este parámetro, mejor es la experiencia del usuario. La medición
+de este parámetro se normaliza a un valor de 0 a 100, utilizando para ello un valor mínimo de jitter de 0 ms y un máximo de 50 ms, tanto para Internet móvil 
+como para el fijo.
+</p>
+"""
+TPerida_paquetes_Info=r"""<p style='text-align:justify'>
+Los paquetes pueden verse como contenedores de información (audio, video, archivos, etc.), los cuales se envían y reciben en toda interacción en Internet. En 
+este contexto, la pérdida de paquetes ocurre cuando la cantidad de paquetes recibidos no es igual a la cantidad de paquetes transmitidos. En este caso, pueden 
+evidenciarse interrupciones en las llamadas (audio o video), en la reproducción de contenidos multimedia, etc. A menor tasa de pérdida de paquetes, mejor es la
+experiencia del usuario. La medición de este parámetro se normaliza a un valor de 0 a 100, utilizando para ello un valor mínimo de tasa de pérdida de paquetes
+de 0 % y un máximo de 100 % para Internet móvil. La información de este parámetro no se encuentra disponible para Internet fijo.
+</p>
+"""
+
+if select_seccion=='Definición':
+    st.markdown("")
+    st.title("Definición del ICE")       
     st.markdown(r"""<hr>""",unsafe_allow_html=True)
-    if seccion_manual=='Objetivo':   
-        st.markdown("<center><h2>Objetivo</h2></center>",unsafe_allow_html=True)
-        st.markdown("<p style='text-align:justify'>Con ocasión del proyecto de “Revisión de las condiciones de calidad en la prestación de los servicios de telecomunicaciones” , se expidió la Resolución CRC 6890 de 2022, desde la cual, entre otras medidas, se modernizó la metodología de medición de la calidad del servicio de Internet prestado a través de redes de acceso móvil y fijo. Teniendo en cuenta lo anterior, y con el fin de incentivar la mejora continua de la calidad de los citados servicios que se prestan a los usuarios, la CRC plantea brindar información de aquellas ciudades que cuentan con las mejores condiciones en términos de calidad del servicio que experimenta el usuario.</p>",unsafe_allow_html=True)
-    elif seccion_manual=='Justificación':
-        st.markdown("<center><h2>Justificación</h2></center>",unsafe_allow_html=True)
-        st.markdown("<p style='text-align:justify'>Para la recopilar la información de las mediciones de calidad, se utilizó la metodología crowdsourcing, mediante la cual se logró obtener las mediciones directamente desde los dispositivos que los usuarios utilizan para acceder a los servicios de Internet móvil e Internet fijo. Por lo anterior, las evaluaciones comparativas, y calificaciones entre operadores de redes móviles, son de gran importancia, pues en su gran mayoría, utilizan estos resultados con el fin de impulsar su identidad corporativa, no obstante, es menester garantizar la transparencia de la información publicada y que carezca de sesgos (ETSI TR 103 559) , por lo que, aunado a lo anterior, el propósito también es trabajar en la reducción de la asimetría de la información hacia el usuario, de tal manera que pueda tomar decisiones bien informado, respecto de la contratación de los servicios de Internet móvil e Internet fijo. </p>",unsafe_allow_html=True)
-        st.markdown("<p style='text-align:justify'>Dicho objetivo se puede lograr mediante la definición de un “Índice de Calidad de la Experiencia -ICE”, con la finalidad principal de identificar, el posicionamiento de las ciudades según la calidad de la experiencia percibida, en un lenguaje sencillo y de fácil entendimiento. Considerando que el despliegue de redes móviles y fijas a nivel nacional varía entre los operadores, pues las redes se construyen con diferentes objetivos de cobertura, y que precisamente este aspecto, junto con indicadores como la velocidad de descarga, la velocidad de carga, la latencia, el jitter y la tasa de pérdida de paquetes, suelen ser factores importantes que influyen en la toma de decisiones de los usuarios sobre el operador que mejor se ajusta a sus necesidades, por lo que la evaluación comparativa debe considerar las diferencias entre los citados parámetros en los resultados. El reporte técnico ETSI TR 103 559, analiza la construcción y la metodología de una evaluación comparativa en una medición nacional, considerando aspectos como el área y la población a cubrir, la recopilación y agregación de las mediciones, y la ponderación de los diversos aspectos considerados, con el principal propósito de identificar las mejores prácticas que se deben tener en cuenta a la hora de realizar una evaluación comparativa de las redes móviles, de tal manera que la comparación refleje la verdadera experiencia del usuario.Considerando las recomendaciones y buenas prácticas contenidas en el mencionado reporte técnico de la ETSI, la presente evaluación comparativa se fundamenta básicamente en dos aspectos importantes: una caracterización de parámetros, y una definición de valores que permiten la normalización y los correspondientes ponderadores.</p>",unsafe_allow_html=True)
-    elif seccion_manual=='Metodología':
-        st.markdown("<center><h2>Metodología</h2></center>",unsafe_allow_html=True)
-        st.markdown("<p style='text-align:justify'>Para la caracterización de indicadores, la referencia directa es la Resolución CRC 6890 de 2022, desde la cual se establecieron la velocidad de descarga, la velocidad de carga, la latencia, el jitter y la tasa de pérdida de paquetes para medir la calidad del servicio de Internet móvil. En cuanto al servicio de Internet fijo se plantean los indicadores de velocidad de descarga, velocidad de carga, latencia y el jitter.Los valores de los indicadores para la normalización (máximos y mínimos) del servicio de Internet móvil están basados en los valores objetivo definidos en la Resolución CRC 6890 de 2022. Para la ponderación de estos indicadores, se realizó un ejercicio de encuesta desde la perspectiva de usuarios para definir el peso (Ponderación) de cada indicador.El cálculo del ICE está conformado por la sumatoria de la relación del valor de la medición y el valor de normalización y el producto con el ponderador de cada uno de los indicadores.</p>",unsafe_allow_html=True)    
-        col1,col2=st.columns(2)
-        with col1:
-            st.markdown("<p style='font-size:11px;text-align:center'><b>Tabla 1:</b> Valores de referencia para el cálculo del ICE para el servicio de Internet móvil</p>",unsafe_allow_html=True)
-            st.image("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/ICE%20Movil.png")
-        with col2:
-            st.markdown("<p style='font-size:11px;text-align:center'><b>Tabla 2:</b> Valores de referencia para el cálculo del ICE para el servicio de Internet fijo</p>",unsafe_allow_html=True)
-            st.image("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/ICE%20Fijo.png")
+    st.markdown("")
+    st.markdown(Intro_Sec1,unsafe_allow_html=True)
+    st.markdown(Intro_Sec2,unsafe_allow_html=True)
+    st.markdown(Intro_Sec3,unsafe_allow_html=True)
+    st.markdown(Intro_Sec4,unsafe_allow_html=True)
+    st.markdown(Intro_Sec5,unsafe_allow_html=True)
+    st.markdown(Intro_Sec6,unsafe_allow_html=True)
+    st.markdown("A continuación se presenta una definición detallada de cada uno de los parámetros usados para el cálculo del índice",unsafe_allow_html=True)
+    
+    col1,col2=st.columns(2)
+    with col1:
+        with st.expander('Velocidad de descarga'):
+            st.markdown(Vel_descarga_Info,unsafe_allow_html=True)
+    with col2:
+        with st.expander('Velocidad de carga'):
+            st.markdown(Vel_carga_Info,unsafe_allow_html=True)
+    col1,col2=st.columns(2)        
+    with col1:
+        with st.expander('Latencia'):
+            st.markdown(Lat_Info,unsafe_allow_html=True)       
+    with col2:
+        with st.expander('Jitter'):
+            st.markdown(Jitter_Info,unsafe_allow_html=True)
+    col1,col2=st.columns(2) 
+    with col1:
+        with st.expander('Tasa pérdida paquetes'):
+            st.markdown(TPerida_paquetes_Info,unsafe_allow_html=True)
+
+    st.markdown(r"""<p style='text-align:justify'>El cálculo del ICE está conformado por la sumatoria de la relación del valor de la medición y el valor de normalización y 
+    el producto con el ponderador de cada uno de los indicadores. En las tablas 1 y 2 se pueden observar estos ponderadores, así como los valores de 
+    normalización indicados previamente.</p>""",unsafe_allow_html=True)    
+    
+    col1,col2=st.columns(2)
+    with col1:
+        st.markdown("<p style='font-size:11px;text-align:center'><b>Tabla 1:</b> Valores de referencia para el cálculo del ICE para el servicio de Internet móvil</p>",unsafe_allow_html=True)
+        st.image("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/ICE%20Movil2.png")
+    with col2:
+        st.markdown("<p style='font-size:11px;text-align:center'><b>Tabla 2:</b> Valores de referencia para el cálculo del ICE para el servicio de Internet fijo</p>",unsafe_allow_html=True)
+        st.image("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/ICE%20Fijo2.png")
         
-if select_seccion=='Índice de calidad':
-    st.title("Índice de calidad CRC") 
+if select_seccion=='Resultados':
+    st.title("Resultados ICE") 
     select_servicio=st.radio('Seleccione un servicio para el cálculo del indicador',['Internet fijo','Internet móvil'],horizontal=True)
     st.markdown(r"""<hr>""",unsafe_allow_html=True)
     
     if select_servicio=='Internet fijo':
-        st.markdown("<center><h2>Servicios fijos</h2></center>",unsafe_allow_html=True)
+        st.markdown("<center><h2>Internet fijo</h2></center>",unsafe_allow_html=True)
         puebaBaseFijosMuni=gdf.merge(BaseFijosMunicipios,left_on=['municipio','departamento'],right_on=['municipio','departamento'])        
 
         dict_parametros={'Velocidad de descarga':'download_speed','Velocidad de carga':'upload_speed','Latencia':'latency','Jitter':'jitter','Índice calidad':'Indice_CRC'}
@@ -541,7 +653,7 @@ if select_seccion=='Índice de calidad':
                 folium_static(colombia_map,width=480) 
        
     if select_servicio=='Internet móvil':
-        st.markdown("<center><h2>Servicios móviles</h2></center>",unsafe_allow_html=True)        
+        st.markdown("<center><h2>Internet móvil</h2></center>",unsafe_allow_html=True)        
         puebaBaseMovilesMuni=gdf.merge(BaseMovilesMunicipio,left_on=['municipio','departamento'],right_on=['municipio','departamento'])        
 
         dict_parametros={'Velocidad de descarga':'download_speed','Velocidad de carga':'upload_speed','Latencia':'latency','Jitter':'jitter','Índice calidad':'Indice_CRC'}
