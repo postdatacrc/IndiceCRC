@@ -543,7 +543,7 @@ if select_seccion=='Resultados':
         st.markdown("<center><h2>Internet fijo</h2></center>",unsafe_allow_html=True)
         puebaBaseFijosMuni=gdf.merge(BaseFijosMunicipios,left_on=['municipio','departamento'],right_on=['municipio','departamento'])        
 
-        dict_parametros={'Velocidad de descarga':'download_speed','Velocidad de carga':'upload_speed','Latencia':'latency','Jitter':'jitter','Índice calidad':'Indice_CRC'}
+        dict_parametros={'Velocidad de descarga':'download_speed','Velocidad de carga':'upload_speed','Latencia':'latency','Jitter':'jitter','Índice calidad':'ICE'}
         dict_parametros_unidad={'Velocidad de descarga':'(mpbs)','Velocidad de carga':'(mbps)','Latencia':'(ms)','Jitter':'(ms)','Índice calidad':'(%)'}
         ParametroFijo=st.radio('Elija un parámetro a calcular',['Velocidad de descarga','Velocidad de carga','Latencia','Jitter','Índice calidad'],horizontal=True)        
         # prueba1=st.selectbox('',BaseFijosMunicipios['municipio'].unique().tolist())
@@ -581,7 +581,7 @@ if select_seccion=='Resultados':
                 with col4:
                     st.markdown("<center><h5>Jitter<br>(ms)</h5></center>",unsafe_allow_html=True)
                 with col5:
-                    st.markdown("<center><h5>Índice CRC<br>(%)</h5></center>",unsafe_allow_html=True)
+                    st.markdown("<center><h5>ICE<br>(%)</h5></center>",unsafe_allow_html=True)
                 col1,col2,col3,col4,col5=st.columns(5)                
                 with col1:
                     st.markdown(str(round(FijoMuniMetric['download_speed'].values.tolist()[0],2)))     
@@ -692,7 +692,7 @@ if select_seccion=='Resultados':
                 with col4:
                     st.markdown("<center><h5>Jitter<br>(ms)</h5></center>",unsafe_allow_html=True)
                 with col5:
-                    st.markdown("<center><h5>Índice CRC<br>(%)</h5></center>",unsafe_allow_html=True)
+                    st.markdown("<center><h5>ICE<br>(%)</h5></center>",unsafe_allow_html=True)
                 col1,col2,col3,col4,col5=st.columns(5)                
                 with col1:
                     st.markdown(str(round(MovilMuniMetric['download_speed'].values.tolist()[0],2)))     
