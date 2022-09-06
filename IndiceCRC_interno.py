@@ -325,7 +325,7 @@ def lineatiempoMuniMovil(df,yvalue):
     return fig
 
 
-@st.cache(ttl=24*3600,allow_output_mutation=True)
+#@st.cache(ttl=24*3600,allow_output_mutation=True)
 def ReadDataFijoMunicipios():
     FijosMuni=pd.read_csv('https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/Bases/BaseFijosMunicipios.csv')
     return FijosMuni
@@ -342,7 +342,7 @@ BaseFijosMunicipios['departamento']=BaseFijosMunicipios['departamento'].replace(
                                                                         'SAN ANDRES AND PROVIDENCIA':'SAN ANDRES','SANTANDER DEPARTMENT':'SANTANDER',
                                                                         'BOGOTA':'BOGOTA, D.C.','NARINO':'NARIÑO'})
 
-@st.cache(ttl=24*3600,allow_output_mutation=True)
+#@st.cache(ttl=24*3600,allow_output_mutation=True)
 def ReadDataMovilesMunicipios():
     MovilesMuni=pd.read_csv('https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/Bases/BaseMovilesMunicipio.csv')
     return MovilesMuni
@@ -360,7 +360,7 @@ BaseMovilesMunicipio['departamento']=BaseMovilesMunicipio['departamento'].replac
                                                                         'SAN ANDRES AND PROVIDENCIA':'SAN ANDRES','SANTANDER DEPARTMENT':'SANTANDER',
                                                                         'BOGOTA':'BOGOTA, D.C.','NARINO':'NARIÑO'})
 
-@st.cache(allow_output_mutation=True)
+#@st.cache(allow_output_mutation=True)
 def MunicipiosColombia():
     gdf= gpd.read_file("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/co_2018_MGN_MPIO_POLITICO.geojson")
     gdf=gdf.rename(columns={'MPIO_CNMBR':'municipio','MPIO_CCNCT':'ID_MUNICIPIO','DPTO_CNMBR':'departamento'})
@@ -370,7 +370,7 @@ def MunicipiosColombia():
     gdf['municipio']=gdf['municipio'].replace('BOGOTA, D.C.','BOGOTA')
     return gdf
 gdf=MunicipiosColombia()
-@st.cache(allow_output_mutation=True)
+#@st.cache(allow_output_mutation=True)
 def data_MuniColombia():    
     with urllib.request.urlopen("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/co_2018_MGN_MPIO_POLITICO.geojson") as url:
         Muni = json.loads(url.read().decode())
