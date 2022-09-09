@@ -64,6 +64,12 @@ Estilo_css="""<style type="text/css">
         color: #7a44f2;
         font-weight: bold;
     }        
+    .css-1kyxreq {
+        display: unset;
+    }
+    .css-1v0mbdj {
+        display: unset;
+    }    
     .barra-superior{top: 0;
         position: fixed;
         background-color: #FE9D82;

@@ -63,6 +63,12 @@ Estilo_css="""<style type="text/css">
         color: #7a44f2;
         font-weight: bold;
     }        
+    .css-1kyxreq {
+        display: unset;
+    }
+    .css-1v0mbdj {
+        display: unset;
+    }
     .barra-superior{top: 0;
         position: fixed;
         background-color: #27348b;
@@ -555,6 +561,7 @@ if select_seccion=='Resultados':
         BaseFijosMunicipios['municipio']=BaseFijosMunicipios['municipio'].replace({'SAN JOSE DEL GUAVIARE':'SJ. GUAVIARE'})
         BaseFijosMunicipios=BaseFijosMunicipios.sort_values(by=['periodo'],ascending=False)
         Ciudades_capitales=sorted(BaseFijosMunicipios['municipio'].unique().tolist())
+        Ciudades_capitales.insert(0,'COLOMBIA')
                 
         st.markdown("<h3> Comparación posiciones de ciudades por periodo</h3>",unsafe_allow_html=True)
         col1,col2,col3=st.columns(3)
@@ -648,7 +655,12 @@ if select_seccion=='Resultados':
         st.markdown("<h3> Evolución temporal capitales departamentales</h3>",unsafe_allow_html=True)
         Select_ciudCapital=st.multiselect('Escoja las ciudades capitales a comparar',Ciudades_capitales)
         
+        
         dfFijoCiudCapi=BaseFijosMunicipios[BaseFijosMunicipios['municipio'].isin(Select_ciudCapital)]
+        dfFijoCiudCapi=dfFijoCiudCapi[['periodo','municipio','Indice_CRC']]
+        dfFijoCol=BaseFijosMunicipios.groupby(['periodo'])['Indice_CRC'].mean().reset_index().round(1)
+        dfFijoCol['municipio']='COLOMBIA'
+        dfFijoCiudCapi=pd.concat([dfFijoCiudCapi,dfFijoCol])
         fig_ciudadesEv=make_subplots(rows=1,cols=1)
         for ciudad in Select_ciudCapital:
             dfFijoCiudCapi2=dfFijoCiudCapi[dfFijoCiudCapi['municipio']==ciudad]
@@ -675,7 +687,7 @@ if select_seccion=='Resultados':
         font=dict(size=11), xref='x domain',x=0.5,yref='y domain',y=-0.2) 
         st.plotly_chart(fig_ciudadesEv,use_container_width=True)
 
-
+        st.markdown("<p style='font-size:15px;text-align:left'><b>Nota:</b> Resultados basados en el análisis realizado por CRC de los datos de Speedtest Intelligence® para 2018 - 2021. </p>",unsafe_allow_html=True)
 
     if select_servicio=='Internet móvil':
         st.markdown("<center><h2>Internet móvil</h2></center>",unsafe_allow_html=True)        
@@ -686,6 +698,7 @@ if select_seccion=='Resultados':
         BaseMovilesMunicipio['municipio']=BaseMovilesMunicipio['municipio'].replace({'SAN JOSE DEL GUAVIARE':'SJ. GUAVIARE'})
         BaseMovilesMunicipio=BaseMovilesMunicipio.sort_values(by=['periodo'],ascending=False)
         Ciudades_capitales=sorted(BaseMovilesMunicipio['municipio'].unique().tolist())
+        Ciudades_capitales.insert(0,'COLOMBIA')        
                
         st.markdown("<h3> Comparación posiciones de ciudades por periodo</h3>",unsafe_allow_html=True)
         col1,col2,col3=st.columns(3)
@@ -770,6 +783,9 @@ if select_seccion=='Resultados':
         Select_ciudCapital=st.multiselect('Escoja las ciudades capitales a comparar',Ciudades_capitales)
         
         dfMpovilCiudCapi=BaseMovilesMunicipio[BaseMovilesMunicipio['municipio'].isin(Select_ciudCapital)]
+        dfMovilCol=BaseMovilesMunicipio.groupby(['periodo'])['Indice_CRC'].mean().reset_index().round(1)
+        dfMovilCol['municipio']='COLOMBIA'
+        dfMpovilCiudCapi=pd.concat([dfMpovilCiudCapi,dfMovilCol])        
         fig_ciudadesEvMov=make_subplots(rows=1,cols=1)
         for ciudad in Select_ciudCapital:
             dfMpovilCiudCapi2=dfMpovilCiudCapi[dfMpovilCiudCapi['municipio']==ciudad]
@@ -795,3 +811,6 @@ if select_seccion=='Resultados':
         text='',
         font=dict(size=11), xref='x domain',x=0.5,yref='y domain',y=-0.2) 
         st.plotly_chart(fig_ciudadesEvMov,use_container_width=True)
+        
+        st.markdown("<p style='font-size:15px;text-align:left'><b>Nota:</b> Resultados basados en el análisis realizado por CRC de los datos de Speedtest Intelligence® para 2018 - 2021. </p>",unsafe_allow_html=True)
+        
