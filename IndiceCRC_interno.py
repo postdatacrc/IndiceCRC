@@ -232,7 +232,7 @@ def AvgPacket(x):
 ## Definiciones Fijos
 
 def DownloadFIJO(x):
-    min_down=25;max_down=500;weight_down=0.38
+    min_down=25;max_down=500;weight_down=0.40
     if x>max_down:
         y=100*weight_down
     elif x<min_down:
@@ -241,7 +241,7 @@ def DownloadFIJO(x):
         y= y=(x/max_down)*100*weight_down
     return y
 def UploadFIJO(x):
-    min_up=5;max_up=500;weight_up=0.27
+    min_up=5;max_up=500;weight_up=0.25
     if x>max_up:
         y=100*weight_up
     elif x<min_up:
@@ -250,7 +250,7 @@ def UploadFIJO(x):
         y= y=(x/max_up)*100*weight_up
     return y
 def LatencyFIJO(x):
-    min_Lat=25;max_Lat=100;weight_Lat=0.23
+    min_Lat=25;max_Lat=100;weight_Lat=0.25
     if x>=max_Lat:
         y=0
     elif x<=min_Lat:
@@ -259,7 +259,7 @@ def LatencyFIJO(x):
         y=100*(max_Lat-x)*weight_Lat/(max_Lat-min_Lat)
     return y
 def JitterFIJO(x):
-    min_Jit=0;max_Jit=50;weight_Jit=0.12
+    min_Jit=0;max_Jit=50;weight_Jit=0.1
     if x>=max_Jit:
         y=0
     elif x<=min_Jit:
@@ -331,7 +331,7 @@ def lineatiempoMuniMovil(df,yvalue):
     return fig
 
 
-#@st.cache(ttl=24*3600,allow_output_mutation=True)
+@st.cache(ttl=24*3600,allow_output_mutation=True)
 def ReadDataFijoMunicipios():
     FijosMuni=pd.read_csv('https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/Bases/BaseFijosMunicipios.csv')
     return FijosMuni
@@ -348,7 +348,7 @@ BaseFijosMunicipios['departamento']=BaseFijosMunicipios['departamento'].replace(
                                                                         'SAN ANDRES AND PROVIDENCIA':'SAN ANDRES','SANTANDER DEPARTMENT':'SANTANDER',
                                                                         'BOGOTA':'BOGOTA, D.C.','NARINO':'NARIÑO'})
 
-#@st.cache(ttl=24*3600,allow_output_mutation=True)
+@st.cache(ttl=24*3600,allow_output_mutation=True)
 def ReadDataMovilesMunicipios():
     MovilesMuni=pd.read_csv('https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/Bases/BaseMovilesMunicipio.csv')
     return MovilesMuni
@@ -366,7 +366,7 @@ BaseMovilesMunicipio['departamento']=BaseMovilesMunicipio['departamento'].replac
                                                                         'SAN ANDRES AND PROVIDENCIA':'SAN ANDRES','SANTANDER DEPARTMENT':'SANTANDER',
                                                                         'BOGOTA':'BOGOTA, D.C.','NARINO':'NARIÑO'})
 
-#@st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True)
 def MunicipiosColombia():
     gdf= gpd.read_file("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/co_2018_MGN_MPIO_POLITICO.geojson")
     gdf=gdf.rename(columns={'MPIO_CNMBR':'municipio','MPIO_CCNCT':'ID_MUNICIPIO','DPTO_CNMBR':'departamento'})
@@ -376,7 +376,7 @@ def MunicipiosColombia():
     gdf['municipio']=gdf['municipio'].replace('BOGOTA, D.C.','BOGOTA')
     return gdf
 gdf=MunicipiosColombia()
-#@st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True)
 def data_MuniColombia():    
     with urllib.request.urlopen("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/co_2018_MGN_MPIO_POLITICO.geojson") as url:
         Muni = json.loads(url.read().decode())
@@ -549,7 +549,7 @@ if select_seccion=='Resultados':
         st.markdown("<center><h2>Internet fijo</h2></center>",unsafe_allow_html=True)
         puebaBaseFijosMuni=gdf.merge(BaseFijosMunicipios,left_on=['municipio','departamento'],right_on=['municipio','departamento'])        
 
-        dict_parametros={'Velocidad de descarga':'download_speed','Velocidad de carga':'upload_speed','Latencia':'latency','Jitter':'jitter','Índice calidad':'ICE'}
+        dict_parametros={'Velocidad de descarga':'download_speed','Velocidad de carga':'upload_speed','Latencia':'latency','Jitter':'jitter','Índice calidad':'Indice_CRC'}
         dict_parametros_unidad={'Velocidad de descarga':'(mpbs)','Velocidad de carga':'(mbps)','Latencia':'(ms)','Jitter':'(ms)','Índice calidad':'(%)'}
         ParametroFijo=st.radio('Elija un parámetro a calcular',['Velocidad de descarga','Velocidad de carga','Latencia','Jitter','Índice calidad'],horizontal=True)        
         # prueba1=st.selectbox('',BaseFijosMunicipios['municipio'].unique().tolist())
