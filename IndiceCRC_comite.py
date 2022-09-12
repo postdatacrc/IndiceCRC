@@ -220,7 +220,7 @@ def AvgPacket(x):
 ## Definiciones Fijos
 
 def DownloadFIJO(x):
-    min_down=25;max_down=500;weight_down=0.38
+    min_down=25;max_down=500;weight_down=0.40
     if x>max_down:
         y=100*weight_down
     elif x<min_down:
@@ -229,7 +229,7 @@ def DownloadFIJO(x):
         y= y=(x/max_down)*100*weight_down
     return y
 def UploadFIJO(x):
-    min_up=5;max_up=500;weight_up=0.27
+    min_up=5;max_up=500;weight_up=0.25
     if x>max_up:
         y=100*weight_up
     elif x<min_up:
@@ -238,7 +238,7 @@ def UploadFIJO(x):
         y= y=(x/max_up)*100*weight_up
     return y
 def LatencyFIJO(x):
-    min_Lat=25;max_Lat=100;weight_Lat=0.23
+    min_Lat=25;max_Lat=100;weight_Lat=0.25
     if x>=max_Lat:
         y=0
     elif x<=min_Lat:
@@ -247,7 +247,7 @@ def LatencyFIJO(x):
         y=100*(max_Lat-x)*weight_Lat/(max_Lat-min_Lat)
     return y
 def JitterFIJO(x):
-    min_Jit=0;max_Jit=50;weight_Jit=0.12
+    min_Jit=0;max_Jit=50;weight_Jit=0.10
     if x>=max_Jit:
         y=0
     elif x<=min_Jit:
