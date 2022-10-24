@@ -627,7 +627,7 @@ if select_seccion=='Resultados':
           <tr>
             <th></th>
             <th>Posición</th>
-            <th>Municipio</th>
+            <th style='width:180px'>Municipio</th>
             <th colspan="2" style='text-align:left'>Índice CRC</th>
           </tr> 
           """
