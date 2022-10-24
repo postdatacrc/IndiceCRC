@@ -753,25 +753,26 @@ if select_seccion=='Resultados':
         
         BaseMovilesMunicipios2=BaseMovilesMunicipio.copy()[['periodo','municipio','departamento','Indice_CRC']]        
         
-        pruebaHTML=Compara_Ciudad[['Cambio posición','posición_x','periodo_x','municipio','Indice_CRC_x']].round(2).values.tolist()
+        pruebaHTML=Compara_Ciudad[['Cambio posición','posición_x','municipio','Indice_CRC_x']]
+        pruebaHTML['barra']=""
+        pruebaHTML=pruebaHTML.values.tolist()
         Title="""<table class='styled-table'>
           <tr>
             <th></th>
             <th>Posición</th>
-            <th>Periodo</th>
             <th>Municipio</th>
-            <th>Índice CRC</th>
+            <th colspan="2" style='text-align:left'>Índice CRC</th>
           </tr> 
           """
         def htmlcode(x,a,b):
             html=""
-            maximo_Indice=max([i[4] for i in x])
+            maximo_Indice=max([i[3] for i in x])
             for i in x[a:b]:
-                width_linea=round(i[4]*100/maximo_Indice,2)
-                html+="""<tr><td>"""+i[0]+"""</td><td>"""+str(i[1])+"""</td><td>"""+i[2]+"""</td><td>"""+i[3]+"""</td><td>"""+str(i[4])+"""</td></tr>"""
-                html+="""<tr style='height:10%'><td colspan="5"><hr style='background-color:rgb(73,73,231);height:5px;width:"""+str(width_linea)+"""%'></td></tr>"""
+                width_linea=round(i[3]*100/maximo_Indice,2)
+                html+="""<tr><td>"""+i[0]+"""</td><td>"""+str(i[1])+"""</td><td style='text-align:left'>"""+i[2]+"""</td><td>"""+str(i[3])+"""</td>"""
+                html+="""<td style="width:300px"><hr style='background:linear-gradient(to right,rgb(73,73,231) """+str(width_linea)+"""%, #FE9D82 """+str(width_linea)+"""%, #FE9D82 100%);height:10px;'></td></tr>"""
             html=html+"""</table>"""    
-            return html        
+            return html   
             
         col1,col2=st.columns(2)
         with col1:    
