@@ -753,7 +753,7 @@ if select_seccion=='Resultados':
         
         BaseMovilesMunicipios2=BaseMovilesMunicipio.copy()[['periodo','municipio','departamento','Indice_CRC']]        
         
-        pruebaHTML=Compara_Ciudad[['Cambio posición','posición_x','municipio','Indice_CRC_x']]
+        pruebaHTML=round(Compara_Ciudad[['Cambio posición','posición_x','municipio','Indice_CRC_x']],2)
         pruebaHTML['barra']=""
         pruebaHTML=pruebaHTML.values.tolist()
         Title="""<table class='styled-table'>
