@@ -601,6 +601,8 @@ if select_seccion=='Resultados':
         else:
             second_period=select_periodoComp1
         
+        st.markdown("""<p style='font-size:12px'><b>Nota</b>: El cambio en la posición se compara respecto al periodo inmediatamente anterior</p>""",unsafe_allow_html=True)
+        
         prueba1=BaseFijosMunicipios[BaseFijosMunicipios['periodo']==select_periodoComp1].sort_values(by=['Indice_CRC'],ascending=False).reset_index()
         prueba1['posición']=prueba1.index+1
         prueba1=prueba1[['periodo','municipio','Indice_CRC','posición','download_speed','upload_speed','latency','jitter']]
@@ -646,8 +648,7 @@ if select_seccion=='Resultados':
             st.markdown(Title+htmlcode(pruebaHTML,0,13),unsafe_allow_html=True)
         with col2:    
             st.markdown(Title+htmlcode(pruebaHTML,13,26),unsafe_allow_html=True)  
-        st.markdown("""<p style='font-size:12px'><b>Nota</b>: El cambio en la posición se compara respecto al periodo inmediatamente anterior</p>""",unsafe_allow_html=True)
-        ################################################################################################################    
+                ################################################################################################################    
         st.markdown(r"""<hr>""",unsafe_allow_html=True)
         st.markdown("<h3> Evolución temporal capitales departamentales</h3>",unsafe_allow_html=True)
         param_Evo=st.radio('Escoja el parámetro a visualizar',['Índice CRC','Velocidad de descarga','Velocidad de carga','Latencia','Jitter'],horizontal=True)
@@ -712,6 +713,8 @@ if select_seccion=='Resultados':
         else:
             second_period=select_periodoComp1
         
+        st.markdown("""<p style='font-size:12px'><b>Nota</b>: El cambio en la posición se compara respecto al periodo inmediatamente anterior</p>""",unsafe_allow_html=True)
+        
         prueba1=BaseMovilesMunicipio[BaseMovilesMunicipio['periodo']==select_periodoComp1].sort_values(by=['Indice_CRC'],ascending=False).reset_index()
         prueba1['posición']=prueba1.index+1
         prueba1=prueba1[['periodo','municipio','Indice_CRC','posición','download_speed','upload_speed','latency','jitter']]
@@ -738,7 +741,7 @@ if select_seccion=='Resultados':
           <tr>
             <th></th>
             <th>Posición</th>
-            <th>Municipio</th>
+            <th style='width:180px'>Municipio</th>
             <th colspan="2" style='text-align:left'>Índice CRC</th>
           </tr> 
           """
@@ -757,8 +760,7 @@ if select_seccion=='Resultados':
             st.markdown(Title+htmlcode(pruebaHTML,0,13),unsafe_allow_html=True)
         with col2:    
             st.markdown(Title+htmlcode(pruebaHTML,13,26),unsafe_allow_html=True)  
-        st.markdown("""<p style='font-size:12px'><b>Nota</b>: El cambio en la posición se compara respecto al periodo inmediatamente anterior</p>""",unsafe_allow_html=True)
-        ################################################################################################################    
+                ################################################################################################################    
         st.markdown(r"""<hr>""",unsafe_allow_html=True)
         st.markdown("<h3> Evolución temporal capitales departamentales</h3>",unsafe_allow_html=True)
         param_Evo=st.radio('Escoja el parámetro a visualizar',['Índice CRC','Velocidad de descarga','Velocidad de carga','Latencia','Jitter'],horizontal=True)
