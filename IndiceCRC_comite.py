@@ -164,6 +164,47 @@ Estilo_css="""<style type="text/css">
     }
     .e1tzin5v3{
         text-align:center}
+        
+    .styled-table {
+        border-collapse: collapse;
+        margin: 25px 0;
+        font-size: 0.9em;
+        font-family: sans-serif;
+        min-width: 400px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+        margin-left: auto;
+        margin-right: auto;        
+        border-collapse: collapse;
+    }    
+    .styled-table thead tr {
+        background-color: #009879;
+        color: #ffffff;
+        text-align: left;
+    }    
+    .styled-table th,
+    .styled-table td {
+        padding: 12px 15px;
+        border:0;
+    }
+    .styled-table tbody tr {
+        border-bottom: 1px solid #dddddd;
+    }
+
+    .styled-table tbody tr:nth-of-type(even) {
+        background-color: #f3f3f3;
+    }
+
+    .styled-table tbody tr:last-of-type {
+        border-bottom: 2px solid #FE9D82;
+    }    
+    .styled-table tbody tr:first-of-type {
+        border-top: 2px solid #FE9D82;
+    }        
+    .styled-table tbody tr.active-row {
+        font-weight: bold;
+        color: #009879;
+    }    
+    hr{margin:0}
     </style>"""
 Barra_superior="""
 <div class="barra-superior">
@@ -319,10 +360,12 @@ def lineatiempoMuniMovil(df,yvalue):
     return fig
 
 def cambiopos(x):
-    if x<=0:
-        y=str(x)
+    if x<0:
+        y="""<span style='color:red'>"""+str(x)+"""</span>"""
+    elif x==0:
+        y='-'
     else:   
-        y='+'+str(x)
+        y="""<span style='color:green'>+"""+str(x)+"""</span>"""
     return y           
 
 #@st.cache(ttl=24*3600,allow_output_mutation=True)
@@ -502,6 +545,9 @@ de 0 % y un máximo de 100 % para Internet móvil. La información de este pará
 </p>
 """
 
+dict_parametros={'Velocidad de descarga':'download_speed','Velocidad de carga':'upload_speed','Latencia':'latency','Jitter':'jitter','Índice CRC':'Indice_CRC'}
+dict_parametros_unidad={'Velocidad de descarga':'(mpbs)','Velocidad de carga':'(mbps)','Latencia':'(ms)','Jitter':'(ms)','Índice CRC':'(%)'}
+
 if select_seccion=='Definición':
     st.markdown("")
     st.title("Definición del ICE")       
@@ -562,116 +608,89 @@ if select_seccion=='Resultados':
         BaseFijosMunicipios=BaseFijosMunicipios.sort_values(by=['periodo'],ascending=False)
         Ciudades_capitales=sorted(BaseFijosMunicipios['municipio'].unique().tolist())
         Ciudades_capitales.insert(0,'COLOMBIA')
-                
+        
+        st.markdown(r"""<hr>""",unsafe_allow_html=True)    
         st.markdown("<h3> Comparación posiciones de ciudades por periodo</h3>",unsafe_allow_html=True)
+        periodos_posiciones=BaseFijosMunicipios['periodo'].unique().tolist()
         col1,col2,col3=st.columns(3)
         
         with col2:
-            select_periodoComp=st.selectbox('Escoja el periodo a comparar con 2021-12',BaseFijosMunicipios['periodo'].unique().tolist()[1:],11)
+            select_periodoComp1=st.selectbox('Escoja un periodo',periodos_posiciones,0)
         
-        prueba1=BaseFijosMunicipios[BaseFijosMunicipios['periodo']=='2021-12'].sort_values(by=['Indice_CRC'],ascending=False).reset_index()
+        if periodos_posiciones.index(select_periodoComp1)<len(periodos_posiciones)-1:
+            second_period=periodos_posiciones[periodos_posiciones.index(select_periodoComp1)+1]
+        else:
+            second_period=select_periodoComp1
+        
+        prueba1=BaseFijosMunicipios[BaseFijosMunicipios['periodo']==select_periodoComp1].sort_values(by=['Indice_CRC'],ascending=False).reset_index()
         prueba1['posición']=prueba1.index+1
         prueba1=prueba1[['periodo','municipio','Indice_CRC','posición','download_speed','upload_speed','latency','jitter']]
         prueba1[['download_speed','upload_speed','latency','jitter']]=round(prueba1[['download_speed','upload_speed','latency','jitter']],2)
-        replace_colname={'download_speed':'Vel descarga 2021-12','upload_speed':'Vel carga 2021-12','latency':'Latencia 2021-12','jitter':'Jitter 2021-12'}
+        replace_colname={'download_speed':'Vel descarga '+select_periodoComp1,'upload_speed':'Vel carga '+select_periodoComp1,'latency':'Latencia '+select_periodoComp1,'jitter':'Jitter '+select_periodoComp1}
         prueba1=prueba1.rename(columns=replace_colname)
 
-        prueba2=BaseFijosMunicipios[BaseFijosMunicipios['periodo']==select_periodoComp].sort_values(by=['Indice_CRC'],ascending=False).reset_index()
+        prueba2=BaseFijosMunicipios[BaseFijosMunicipios['periodo']==second_period].sort_values(by=['Indice_CRC'],ascending=False).reset_index()
         prueba2['posición']=prueba2.index+1
         prueba2=prueba2[['periodo','municipio','Indice_CRC','posición']]
         
         Compara_Ciudad=prueba1.merge(prueba2, left_on=['municipio'],right_on=['municipio'])
         Compara_Ciudad['Cambio_indice']=round((Compara_Ciudad['Indice_CRC_x']-Compara_Ciudad['Indice_CRC_y']),2)   
-        Compara_Ciudad=Compara_Ciudad.sort_values(by=['posición_x'],ascending=False)
+        Compara_Ciudad['Cambio posición']=Compara_Ciudad['posición_y']-Compara_Ciudad['posición_x']
+        Compara_Ciudad['Cambio posición']=Compara_Ciudad['Cambio posición'].apply(cambiopos)
+        Compara_Ciudad=Compara_Ciudad.sort_values(by=['posición_x'],ascending=True)
         
-        fig_ComparaCiud=make_subplots(rows=1,cols=2)
-        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[:12]['municipio'],x=Compara_Ciudad.iloc[:12]['Indice_CRC_x'],orientation='h',text=Compara_Ciudad[:12]['posición_x'],name='2021-12',textangle=0,textposition='outside',marker_color='#2bc3c3',hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'ICE: %{x:.2f}'+'<br>'+'Periodo: 2021-12'+'<br>'+'Posición:%{text}'),row=1,col=2)
-        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[:12]['municipio'],x=Compara_Ciudad.iloc[:12]['Indice_CRC_y'],orientation='h',text=Compara_Ciudad[:12]['posición_y'],name=select_periodoComp,textangle=0,textposition='outside',marker_color='#4949E7',hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'ICE: %{x:.2f}'+'<br>'+'Periodo:'+select_periodoComp+'<br>'+'Posición:%{text}'),row=1,col=2)
-        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[12:]['municipio'],x=Compara_Ciudad.iloc[12:]['Indice_CRC_x'],orientation='h',text=Compara_Ciudad[12:]['posición_x'],name='2021-12',textangle=0,textposition='outside',marker_color='#2bc3c3',showlegend=False,hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'ICE: %{x:.2f}'+'<br>'+'Periodo: 2021-12'+'<br>'+'Posición:%{text}'),row=1,col=1)
-        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[12:]['municipio'],x=Compara_Ciudad.iloc[12:]['Indice_CRC_y'],orientation='h',text=Compara_Ciudad[12:]['posición_y'],name=select_periodoComp,textangle=0,textposition='outside',marker_color='#4949E7',showlegend=False,hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'ICE: %{x:.2f}'+'<br>'+'Periodo:'+select_periodoComp+'<br>'+'Posición:%{text}'),row=1,col=1)
-        fig_ComparaCiud.update_yaxes(tickfont=dict(family='Poppins', color='black', size=12),titlefont_size=16, title_text=None)
-        fig_ComparaCiud.update_xaxes(tickangle=0,tickfont=dict(family='Poppins', color='black', size=16),title_text='Índice de calidad (%)'
-        ,zeroline=True,linecolor = 'rgba(192, 192, 192, 0.8)',zerolinewidth=2,titlefont_size=16)
-        fig_ComparaCiud.update_layout(height=550,legend_title=None)
-        fig_ComparaCiud.update_layout(font_color="Black",font_family="Poppins",title_font_color="Black",titlefont_size=18,
-        title={
-        'text':'Comparación del ICE y posición en periodo por ciudad',
-        'y':0.98,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'})        
-        fig_ComparaCiud.update_layout(legend=dict(orientation="h",y=1.05,xanchor='center',x=0.5,font_size=11),showlegend=True)
-        fig_ComparaCiud.update_layout(paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)')
-        fig_ComparaCiud.update_yaxes(showgrid=True, gridwidth=1, gridcolor='rgba(192, 192, 192, 0.8)')
-        fig_ComparaCiud.update_layout(yaxis_tickformat ='d',height=1000,uniformtext_minsize=10, uniformtext_mode='hide')
-        fig_ComparaCiud.update_layout(xaxis_tickformat ='%m/%y')
-        fig_ComparaCiud.add_annotation(
-        showarrow=False,
-        text='',
-        font=dict(size=11), xref='x domain',x=0.5,yref='y domain',y=-0.2) 
-                
-        st.plotly_chart(fig_ComparaCiud,use_container_width=True)
         BaseFijosMunicipios2=BaseFijosMunicipios.copy()[['periodo','municipio','departamento','Indice_CRC']]
-        
-        Compara_Ciudad2=Compara_Ciudad.copy()
-        Compara_Ciudad2['Cambio posición']=Compara_Ciudad2['posición_y']-Compara_Ciudad2['posición_x']
-        Compara_Ciudad2['Cambio posición']=Compara_Ciudad2['Cambio posición'].apply(cambiopos)
-        Compara_Ciudad2=Compara_Ciudad2.rename(columns={'periodo_x':'periodo 2','Indice_CRC_x':'ICE 2021-12','posición_x':'pos periodo 2',
-        'periodo_y':'periodo 1','Indice_CRC_y':'ICE '+select_periodoComp,'posición_y':'pos periodo 2','Cambio_indice':'Cambio ICE'})
-        Compara_Ciudad2=Compara_Ciudad2[['municipio','Vel descarga 2021-12','Vel carga 2021-12','Latencia 2021-12','Jitter 2021-12','ICE 2021-12','ICE '+select_periodoComp,'Cambio ICE','Cambio posición']]
-        Compara_Ciudad2=Compara_Ciudad2.round(1)
-        Compara_Ciudad2=Compara_Ciudad2.sort_values(by=['ICE 2021-12'],ascending=False)
-        
-        maxInd2112=Compara_Ciudad2['Cambio posición'].max()
-        
-        gbfijo=GridOptionsBuilder.from_dataframe(Compara_Ciudad2)
-        gbfijo.configure_pagination(enabled=True,paginationAutoPageSize=False,paginationPageSize=15)
-        cols_Fijo=['ICE 2021-12']
-        cellstyle_jscode = JsCode("""
-        function(params){
-            if (params.value > 0) {
-                return {
-                    'color': 'black',
-                    'font-weight':700    
-                }
-            }
-        }
-        """)
-        gbfijo.configure_columns(cols_Fijo,cellStyle=cellstyle_jscode)
-        grid_options = gbfijo.build()
-        
-        def make_pretty(styler):
-            styler.background_gradient(cmap="coolwarm")
-            styler.format('{:.0f}')
-            styler.hide_index()
-            return styler
-        col1,col2,col3=st.columns([0.5,4,0.5])
-        with col2:
-            AgGrid(Compara_Ciudad2,allow_unsafe_jscode=True,theme='streamlit',gridOptions = grid_options)
-        #st.table(Compara_Ciudad2.style.pipe(make_pretty))
-        #st.dataframe(Compara_Ciudad2.style.pipe(make_pretty),width=1500)
-            
+                
+        pruebaHTML=Compara_Ciudad[['Cambio posición','posición_x','municipio','Indice_CRC_x']]
+        pruebaHTML['barra']=""
+        pruebaHTML=pruebaHTML.values.tolist()
+        Title="""<table class='styled-table'>
+          <tr>
+            <th></th>
+            <th>Posición</th>
+            <th>Municipio</th>
+            <th colspan="2" style='text-align:left'>Índice CRC</th>
+          </tr> 
+          """
+        def htmlcode(x,a,b):
+            html=""
+            maximo_Indice=max([i[3] for i in x])
+            for i in x[a:b]:
+                width_linea=round(i[3]*100/maximo_Indice,2)
+                html+="""<tr><td>"""+i[0]+"""</td><td>"""+str(i[1])+"""</td><td style='text-align:left'>"""+i[2]+"""</td><td>"""+str(i[3])+"""</td>"""
+                html+="""<td style="width:300px"><hr style='background:linear-gradient(to right,rgb(73,73,231) """+str(width_linea)+"""%, #FE9D82 """+str(width_linea)+"""%, #FE9D82 100%);height:10px;'></td></tr>"""
+            html=html+"""</table>"""    
+            return html
+           
+        st.markdown("""<hr class="colored" />""",unsafe_allow_html=True)
+        col1,col2=st.columns(2)
+        with col1:    
+            st.markdown(Title+htmlcode(pruebaHTML,0,13),unsafe_allow_html=True)
+        with col2:    
+            st.markdown(Title+htmlcode(pruebaHTML,13,26),unsafe_allow_html=True)  
+        st.markdown("""<p style='font-size:12px'><b>Nota</b>: El cambio en la posición se compara respecto al periodo inmediatamente anterior</p>""",unsafe_allow_html=True)
+        ################################################################################################################    
         st.markdown(r"""<hr>""",unsafe_allow_html=True)
         st.markdown("<h3> Evolución temporal capitales departamentales</h3>",unsafe_allow_html=True)
+        param_Evo=st.radio('Escoja el parámetro a visualizar',['Velocidad de descarga','Velocidad de carga','Latencia','Jitter','Índice CRC'],horizontal=True)
         Select_ciudCapital=st.multiselect('Escoja las ciudades capitales a comparar',Ciudades_capitales)
         
-        
         dfFijoCiudCapi=BaseFijosMunicipios[BaseFijosMunicipios['municipio'].isin(Select_ciudCapital)]
-        dfFijoCiudCapi=dfFijoCiudCapi[['periodo','municipio','Indice_CRC']]
-        dfFijoCol=BaseFijosMunicipios.groupby(['periodo'])['Indice_CRC'].mean().reset_index().round(1)
+        dfFijoCiudCapi=dfFijoCiudCapi[['periodo','municipio',dict_parametros[param_Evo]]]
+        dfFijoCol=BaseFijosMunicipios.groupby(['periodo'])[dict_parametros[param_Evo]].mean().reset_index().round(1)
         dfFijoCol['municipio']='COLOMBIA'
         dfFijoCiudCapi=pd.concat([dfFijoCiudCapi,dfFijoCol])
         fig_ciudadesEv=make_subplots(rows=1,cols=1)
         for ciudad in Select_ciudCapital:
             dfFijoCiudCapi2=dfFijoCiudCapi[dfFijoCiudCapi['municipio']==ciudad]
-            fig_ciudadesEv.add_trace(go.Scatter(x=dfFijoCiudCapi2['periodo'],y=dfFijoCiudCapi2['Indice_CRC'],mode='lines+markers',name=ciudad,hovertemplate='<br><b>Ciudad: </b><extra></extra>'+ciudad+'<br>'+'ICE : %{y:.2f}'+'<br>'+'Periodo : %{x}'))
-        fig_ciudadesEv.update_yaxes(tickfont=dict(family='Poppins', color='black', size=16),titlefont_size=16, title_text='Índice de calidad (%)', row=1, col=1)
+            fig_ciudadesEv.add_trace(go.Scatter(x=dfFijoCiudCapi2['periodo'],y=dfFijoCiudCapi2[dict_parametros[param_Evo]],mode='lines+markers',name=ciudad,hovertemplate='<br><b>Ciudad: </b><extra></extra>'+ciudad+'<br>'+param_Evo+': %{y:.2f}'+'<br>'+'Periodo : %{x}'))
+        fig_ciudadesEv.update_yaxes(tickfont=dict(family='Poppins', color='black', size=16),titlefont_size=16, title_text=param_Evo+' '+dict_parametros_unidad[param_Evo], row=1, col=1)
         fig_ciudadesEv.update_xaxes(tickangle=0, tickfont=dict(family='Poppins', color='black', size=14),title_text='Fecha (mes/año)',row=1, col=1
         ,zeroline=True,linecolor = 'rgba(192, 192, 192, 0.8)',zerolinewidth=2)
         fig_ciudadesEv.update_layout(height=550,legend_title=None)
         fig_ciudadesEv.update_layout(font_color="Black",font_family="Poppins",title_font_color="Black",titlefont_size=16,
         title={
-        'text':'Evolución del ICE por ciudad',
+        'text':param_Evo+' por ciudad',
         'y':0.9,
         'x':0.5,
         'xanchor': 'center',
@@ -687,130 +706,116 @@ if select_seccion=='Resultados':
         font=dict(size=11), xref='x domain',x=0.5,yref='y domain',y=-0.2) 
         st.plotly_chart(fig_ciudadesEv,use_container_width=True)
 
-        st.markdown("<p style='font-size:15px;text-align:left'><b>Nota:</b> Resultados basados en el análisis realizado por CRC de los datos de Speedtest Intelligence® para 2018 - 2021. </p>",unsafe_allow_html=True)
 
+        st.markdown("<p style='font-size:12px;text-align:center'><b>Nota:</b> Resultados basados en el análisis realizado por CRC de los datos de Speedtest Intelligence® para 2018 - 2021. </p>",unsafe_allow_html=True)
+        
+        
+
+        
     if select_servicio=='Internet móvil':
         st.markdown("<center><h2>Internet móvil</h2></center>",unsafe_allow_html=True)        
         BaseMovilesMunicipio=BaseMovilesMunicipio[(BaseMovilesMunicipio['provider']=='All Providers Combined')&(BaseMovilesMunicipio['municipio'].isin(List_capitales))]
         BaseMovilesMunicipio['prueba']=BaseMovilesMunicipio['municipio'].apply(capitales_Dep)
         BaseMovilesMunicipio=BaseMovilesMunicipio.loc[(BaseMovilesMunicipio['departamento'] == BaseMovilesMunicipio['prueba'])]
-        #BaseMovilesMunicipio['Indice_CRC']=round(BaseMovilesMunicipio['Indice_CRC'],2)
         BaseMovilesMunicipio['municipio']=BaseMovilesMunicipio['municipio'].replace({'SAN JOSE DEL GUAVIARE':'SJ. GUAVIARE'})
         BaseMovilesMunicipio=BaseMovilesMunicipio.sort_values(by=['periodo'],ascending=False)
         Ciudades_capitales=sorted(BaseMovilesMunicipio['municipio'].unique().tolist())
         Ciudades_capitales.insert(0,'COLOMBIA')        
                
         st.markdown("<h3> Comparación posiciones de ciudades por periodo</h3>",unsafe_allow_html=True)
+        periodos_posiciones=BaseMovilesMunicipio['periodo'].unique().tolist()
         col1,col2,col3=st.columns(3)
-        with col2:
-            select_periodoComp=st.selectbox('Escoja el periodo a comparar con 2021-12',BaseMovilesMunicipio['periodo'].unique().tolist()[1:],11)
         
-        prueba1=BaseMovilesMunicipio[BaseMovilesMunicipio['periodo']=='2021-12'].sort_values(by=['Indice_CRC'],ascending=False).reset_index()
+        with col2:
+            select_periodoComp1=st.selectbox('Escoja un periodo',periodos_posiciones,0)
+        
+        if periodos_posiciones.index(select_periodoComp1)<len(periodos_posiciones)-1:
+            second_period=periodos_posiciones[periodos_posiciones.index(select_periodoComp1)+1]
+        else:
+            second_period=select_periodoComp1
+        
+        prueba1=BaseMovilesMunicipio[BaseMovilesMunicipio['periodo']==select_periodoComp1].sort_values(by=['Indice_CRC'],ascending=False).reset_index()
         prueba1['posición']=prueba1.index+1
-        prueba1=prueba1[['periodo','municipio','Indice_CRC','posición','download_speed','upload_speed','latency','jitter','AvgPack']]
+        prueba1=prueba1[['periodo','municipio','Indice_CRC','posición','download_speed','upload_speed','latency','jitter']]
         prueba1[['download_speed','upload_speed','latency','jitter']]=round(prueba1[['download_speed','upload_speed','latency','jitter']],2)
-        replace_colname={'download_speed':'Vel descarga 2021-12','upload_speed':'Vel carga 2021-12','latency':'Latencia 2021-12','jitter':'Jitter 2021-12','AvgPack':'Tasa perd. paq 2021-12'}
+        replace_colname={'download_speed':'Vel descarga '+select_periodoComp1,'upload_speed':'Vel carga '+select_periodoComp1,'latency':'Latencia '+select_periodoComp1,'jitter':'Jitter '+select_periodoComp1}
         prueba1=prueba1.rename(columns=replace_colname)
 
-        prueba2=BaseMovilesMunicipio[BaseMovilesMunicipio['periodo']==select_periodoComp].sort_values(by=['Indice_CRC'],ascending=False).reset_index()
+        prueba2=BaseMovilesMunicipio[BaseMovilesMunicipio['periodo']==second_period].sort_values(by=['Indice_CRC'],ascending=False).reset_index()
         prueba2['posición']=prueba2.index+1
         prueba2=prueba2[['periodo','municipio','Indice_CRC','posición']]
         
         Compara_Ciudad=prueba1.merge(prueba2, left_on=['municipio'],right_on=['municipio'])
         Compara_Ciudad['Cambio_indice']=round((Compara_Ciudad['Indice_CRC_x']-Compara_Ciudad['Indice_CRC_y']),2)   
-        Compara_Ciudad=Compara_Ciudad.sort_values(by=['posición_x'],ascending=False)
-
-        Compara_Ciudad2=Compara_Ciudad.copy()
-        Compara_Ciudad2['Cambio posición']=Compara_Ciudad2['posición_y']-Compara_Ciudad2['posición_x']
-        Compara_Ciudad2['Cambio posición']=Compara_Ciudad2['Cambio posición'].apply(cambiopos)
-        Compara_Ciudad2=Compara_Ciudad2.rename(columns={'periodo_x':'periodo 2','Indice_CRC_x':'ICE 2021-12','posición_x':'pos periodo 2',
-        'periodo_y':'periodo 1','Indice_CRC_y':'ICE '+select_periodoComp,'posición_y':'pos periodo 2','Cambio_indice':'Cambio ICE'})
-        Compara_Ciudad2=Compara_Ciudad2[['municipio','Vel descarga 2021-12','Vel carga 2021-12','Latencia 2021-12','Jitter 2021-12','Tasa perd. paq 2021-12','ICE 2021-12','ICE '+select_periodoComp,'Cambio ICE','Cambio posición']]
-        Compara_Ciudad2['Tasa perd. paq 2021-12']=Compara_Ciudad2['Tasa perd. paq 2021-12'].round(5)
-        Compara_Ciudad2[['ICE 2021-12','ICE '+select_periodoComp]]=Compara_Ciudad2[['ICE 2021-12','ICE '+select_periodoComp]].round(1)
-        Compara_Ciudad2=Compara_Ciudad2.sort_values(by=['ICE 2021-12'],ascending=False)
+        Compara_Ciudad['Cambio posición']=Compara_Ciudad['posición_y']-Compara_Ciudad['posición_x']
+        Compara_Ciudad['Cambio posición']=Compara_Ciudad['Cambio posición'].apply(cambiopos)
+        Compara_Ciudad=Compara_Ciudad.sort_values(by=['posición_x'],ascending=True)
         
-        fig_ComparaCiud=make_subplots(rows=1,cols=2)
-        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[:12]['municipio'],x=Compara_Ciudad.iloc[:12]['Indice_CRC_x'],orientation='h',text=Compara_Ciudad[:12]['posición_x'],name='2021-12',textangle=0,textposition='outside',marker_color='#2bc3c3',hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'ICE: %{x:.2f}'+'<br>'+'Periodo: 2021-12'+'<br>'+'Posición:%{text}'),row=1,col=2)
-        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[:12]['municipio'],x=Compara_Ciudad.iloc[:12]['Indice_CRC_y'],orientation='h',text=Compara_Ciudad[:12]['posición_y'],name=select_periodoComp,textangle=0,textposition='outside',marker_color='#4949E7',hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'ICE: %{x:.2f}'+'<br>'+'Periodo:'+select_periodoComp+'<br>'+'Posición:%{text}'),row=1,col=2)
-        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[12:]['municipio'],x=Compara_Ciudad.iloc[12:]['Indice_CRC_x'],orientation='h',text=Compara_Ciudad[12:]['posición_x'],name='2021-12',textangle=0,textposition='outside',marker_color='#2bc3c3',showlegend=False,hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'ICE: %{x:.2f}'+'<br>'+'Periodo: 2021-12'+'<br>'+'Posición:%{text}'),row=1,col=1)
-        fig_ComparaCiud.add_trace(go.Bar(y=Compara_Ciudad.iloc[12:]['municipio'],x=Compara_Ciudad.iloc[12:]['Indice_CRC_y'],orientation='h',text=Compara_Ciudad[12:]['posición_y'],name=select_periodoComp,textangle=0,textposition='outside',marker_color='#4949E7',showlegend=False,hovertemplate='<br><b>Ciudad</b><extra></extra>'+': %{y}<br>'+'<br>'+'ICE: %{x:.2f}'+'<br>'+'Periodo:'+select_periodoComp+'<br>'+'Posición:%{text}'),row=1,col=1)
-        fig_ComparaCiud.update_yaxes(tickfont=dict(family='Poppins', color='black', size=12),titlefont_size=16, title_text=None)
-        fig_ComparaCiud.update_xaxes(tickangle=0,tickfont=dict(family='Poppins', color='black', size=16),title_text='Índice de calidad (%)'
-        ,zeroline=True,linecolor = 'rgba(192, 192, 192, 0.8)',zerolinewidth=2,titlefont_size=16)
-        fig_ComparaCiud.update_layout(height=550,legend_title=None)
-        fig_ComparaCiud.update_layout(font_color="Black",font_family="Poppins",title_font_color="Black",titlefont_size=18,
-        title={
-        'text':'Comparación del ICE y posición en periodo por ciudad',
-        'y':0.98,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'})        
-        fig_ComparaCiud.update_layout(legend=dict(orientation="h",y=1.05,xanchor='center',x=0.5,font_size=11),showlegend=True)
-        fig_ComparaCiud.update_layout(paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)')
-        fig_ComparaCiud.update_yaxes(showgrid=True, gridwidth=1, gridcolor='rgba(192, 192, 192, 0.8)')
-        fig_ComparaCiud.update_layout(yaxis_tickformat ='d',height=1000,uniformtext_minsize=10, uniformtext_mode='hide')
-        fig_ComparaCiud.update_layout(xaxis_tickformat ='%m/%y')
-        fig_ComparaCiud.add_annotation(
-        showarrow=False,
-        text='',
-        font=dict(size=11), xref='x domain',x=0.5,yref='y domain',y=-0.2) 
-                
-        st.plotly_chart(fig_ComparaCiud,use_container_width=True)
-        BaseMovilesMunicipio2=BaseMovilesMunicipio.copy()[['periodo','municipio','departamento','Indice_CRC']]
-
-        gbmovil=GridOptionsBuilder.from_dataframe(Compara_Ciudad2)
-        gbmovil.configure_pagination(enabled=True,paginationAutoPageSize=False,paginationPageSize=15)
-        cols_Movil=['ICE 2021-12']
-        cellstyle_jscode = JsCode("""
-        function(params){
-            if (params.value > 0) {
-                return {
-                    'color': 'black',
-                    'font-weight':700    
-                }
-            }
-        }
-        """)
-        gbmovil.configure_columns(cols_Movil,cellStyle=cellstyle_jscode)
-        grid_optionsM = gbmovil.build()
-        col1,col2,col3=st.columns([0.5,4,0.5])
-        with col2:
-            AgGrid(Compara_Ciudad2,allow_unsafe_jscode=True,theme='streamlit',gridOptions = grid_optionsM)
-
+        BaseMovilesMunicipios2=BaseMovilesMunicipio.copy()[['periodo','municipio','departamento','Indice_CRC']]        
+        
+        pruebaHTML=Compara_Ciudad[['Cambio posición','posición_x','periodo_x','municipio','Indice_CRC_x']].round(2).values.tolist()
+        Title="""<table class='styled-table'>
+          <tr>
+            <th></th>
+            <th>Posición</th>
+            <th>Periodo</th>
+            <th>Municipio</th>
+            <th>Índice CRC</th>
+          </tr> 
+          """
+        def htmlcode(x,a,b):
+            html=""
+            maximo_Indice=max([i[4] for i in x])
+            for i in x[a:b]:
+                width_linea=round(i[4]*100/maximo_Indice,2)
+                html+="""<tr><td>"""+i[0]+"""</td><td>"""+str(i[1])+"""</td><td>"""+i[2]+"""</td><td>"""+i[3]+"""</td><td>"""+str(i[4])+"""</td></tr>"""
+                html+="""<tr style='height:10%'><td colspan="5"><hr style='background-color:rgb(73,73,231);height:5px;width:"""+str(width_linea)+"""%'></td></tr>"""
+            html=html+"""</table>"""    
+            return html        
+            
+        col1,col2=st.columns(2)
+        with col1:    
+            st.markdown(Title+htmlcode(pruebaHTML,0,13),unsafe_allow_html=True)
+        with col2:    
+            st.markdown(Title+htmlcode(pruebaHTML,13,26),unsafe_allow_html=True)  
+        st.markdown("""<p style='font-size:12px'><b>Nota</b>: El cambio en la posición se compara respecto al periodo inmediatamente anterior</p>""",unsafe_allow_html=True)
+        ################################################################################################################    
         st.markdown(r"""<hr>""",unsafe_allow_html=True)
         st.markdown("<h3> Evolución temporal capitales departamentales</h3>",unsafe_allow_html=True)
+        param_Evo=st.radio('Escoja el parámetro a visualizar',['Velocidad de descarga','Velocidad de carga','Latencia','Jitter','Índice CRC'],horizontal=True)
         Select_ciudCapital=st.multiselect('Escoja las ciudades capitales a comparar',Ciudades_capitales)
         
-        dfMpovilCiudCapi=BaseMovilesMunicipio[BaseMovilesMunicipio['municipio'].isin(Select_ciudCapital)]
-        dfMovilCol=BaseMovilesMunicipio.groupby(['periodo'])['Indice_CRC'].mean().reset_index().round(1)
+        dfMovilCiudCapi=BaseMovilesMunicipio[BaseMovilesMunicipio['municipio'].isin(Select_ciudCapital)]
+        dfMovilCiudCapi=dfMovilCiudCapi[['periodo','municipio',dict_parametros[param_Evo]]]
+        dfMovilCol=BaseMovilesMunicipio.groupby(['periodo'])[dict_parametros[param_Evo]].mean().reset_index().round(1)
         dfMovilCol['municipio']='COLOMBIA'
-        dfMpovilCiudCapi=pd.concat([dfMpovilCiudCapi,dfMovilCol])        
-        fig_ciudadesEvMov=make_subplots(rows=1,cols=1)
+        dfMovilCiudCapi=pd.concat([dfMovilCiudCapi,dfMovilCol])
+        fig_ciudadesEv=make_subplots(rows=1,cols=1)
         for ciudad in Select_ciudCapital:
-            dfMpovilCiudCapi2=dfMpovilCiudCapi[dfMpovilCiudCapi['municipio']==ciudad]
-            fig_ciudadesEvMov.add_trace(go.Scatter(x=dfMpovilCiudCapi2['periodo'],y=dfMpovilCiudCapi2['Indice_CRC'],mode='lines+markers',name=ciudad,hovertemplate='<br><b>Ciudad: </b><extra></extra>'+ciudad+'<br>'+'ICE : %{y:.2f}'+'<br>'+'Periodo : %{x}'))
-        fig_ciudadesEvMov.update_yaxes(tickfont=dict(family='Poppins', color='black', size=16),titlefont_size=16, title_text='Índice de calidad (%)', row=1, col=1)
-        fig_ciudadesEvMov.update_xaxes(tickangle=0, tickfont=dict(family='Poppins', color='black', size=14),title_text='Fecha (mes/año)',row=1, col=1
+            dfMovilCiudCapi2=dfMovilCiudCapi[dfMovilCiudCapi['municipio']==ciudad]
+            fig_ciudadesEv.add_trace(go.Scatter(x=dfMovilCiudCapi2['periodo'],y=dfMovilCiudCapi2[dict_parametros[param_Evo]],mode='lines+markers',name=ciudad,hovertemplate='<br><b>Ciudad: </b><extra></extra>'+ciudad+'<br>'+param_Evo+': %{y:.2f}'+'<br>'+'Periodo : %{x}'))
+        fig_ciudadesEv.update_yaxes(tickfont=dict(family='Poppins', color='black', size=16),titlefont_size=16, title_text=param_Evo+' '+dict_parametros_unidad[param_Evo], row=1, col=1)
+        fig_ciudadesEv.update_xaxes(tickangle=0, tickfont=dict(family='Poppins', color='black', size=14),title_text='Fecha (mes/año)',row=1, col=1
         ,zeroline=True,linecolor = 'rgba(192, 192, 192, 0.8)',zerolinewidth=2)
-        fig_ciudadesEvMov.update_layout(height=550,legend_title=None)
-        fig_ciudadesEvMov.update_layout(font_color="Black",font_family="Poppins",title_font_color="Black",titlefont_size=16,
+        fig_ciudadesEv.update_layout(height=550,legend_title=None)
+        fig_ciudadesEv.update_layout(font_color="Black",font_family="Poppins",title_font_color="Black",titlefont_size=16,
         title={
-        'text':'Evolución del ICE por ciudad',
+        'text':param_Evo+' por ciudad',
         'y':0.9,
         'x':0.5,
         'xanchor': 'center',
         'yanchor': 'top'})        
-        fig_ciudadesEvMov.update_layout(legend=dict(orientation="h",y=1.07,x=0.01,font_size=11),showlegend=True)
-        fig_ciudadesEvMov.update_layout(paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)')
-        fig_ciudadesEvMov.update_yaxes(showgrid=True, gridwidth=1, gridcolor='rgba(192, 192, 192, 0.8)')
-        fig_ciudadesEvMov.update_layout(yaxis_tickformat ='d')
-        fig_ciudadesEvMov.update_layout(xaxis_tickformat ='%m/%y')
-        fig_ciudadesEvMov.add_annotation(
+        fig_ciudadesEv.update_layout(legend=dict(orientation="h",y=1.07,x=0.01,font_size=11),showlegend=True)
+        fig_ciudadesEv.update_layout(paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)')
+        fig_ciudadesEv.update_yaxes(showgrid=True, gridwidth=1, gridcolor='rgba(192, 192, 192, 0.8)')
+        fig_ciudadesEv.update_layout(yaxis_tickformat ='d')
+        fig_ciudadesEv.update_layout(xaxis_tickformat ='%m/%y')
+        fig_ciudadesEv.add_annotation(
         showarrow=False,
         text='',
         font=dict(size=11), xref='x domain',x=0.5,yref='y domain',y=-0.2) 
-        st.plotly_chart(fig_ciudadesEvMov,use_container_width=True)
-        
-        st.markdown("<p style='font-size:15px;text-align:left'><b>Nota:</b> Resultados basados en el análisis realizado por CRC de los datos de Speedtest Intelligence® para 2018 - 2021. </p>",unsafe_allow_html=True)
-        
+        st.plotly_chart(fig_ciudadesEv,use_container_width=True)
+
+
+        st.markdown("<p style='font-size:12px;text-align:center'><b>Nota:</b> Resultados basados en el análisis realizado por CRC de los datos de Speedtest Intelligence® para 2018 - 2021. </p>",unsafe_allow_html=True)
+            
