@@ -69,19 +69,6 @@ Estilo_css="""<style type="text/css">
     .css-1v0mbdj {
         display: unset;
     }
-    .barra-superior{top: 0;
-        position: fixed;
-        background-color: #27348b;
-        width: 100%;
-        color:white;
-        z-index: 9;
-        height: 10px;
-        left: 0px;
-        text-align: center;
-        padding: 0px;
-        font-size: 36px;
-        font-weight: 700;
-    }
     .e16nr0p31 {display:none}
     .css-y3whyl, .css-xqnn38 {background-color:#ccc}
     .e8zbici0 {display:none}
@@ -91,9 +78,6 @@ Estilo_css="""<style type="text/css">
     .e1tzin5v2 {
         display:flex;
         align-items:center;
-    }
-    .e1fqkh3o2{
-        padding-top:2.5rem;   
     }
     .css-52bwht{
         gap:0.01rem;
@@ -135,12 +119,7 @@ Estilo_css="""<style type="text/css">
       padding: 0.6rem 0.6rem;
       font-size: 16px;
     }
-    .imagen-flotar{float:left;}
-    @media (max-width:1230px){
-        .barra-superior{height:160px;} 
-        .main, .e1fqkh3o9 > div{margin-top:215px;}
-        .imagen-flotar{float:none}
-        h1{top:160px;}}       
+    .imagen-flotar{float:left;}      
     .IconoTitulo img {
         margin-right:10px;
     }
@@ -368,7 +347,7 @@ def cambiopos(x):
         y="""<span style='color:green'>+"""+str(x)+"""</span>"""
     return y           
 
-#@st.cache(ttl=24*3600,allow_output_mutation=True)
+#@st.cachettl=24*3600,allow_output_mutation=True)
 def ReadDataFijoMunicipios():
     FijosMuni=pd.read_csv('https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/Bases/BaseFijosMunicipios.csv')
     return FijosMuni
@@ -385,7 +364,7 @@ BaseFijosMunicipios['departamento']=BaseFijosMunicipios['departamento'].replace(
                                                                         'SAN ANDRES AND PROVIDENCIA':'SAN ANDRES','SANTANDER DEPARTMENT':'SANTANDER',
                                                                         'BOGOTA':'BOGOTA, D.C.','NARINO':'NARIÑO'})
 
-#@st.cache(ttl=24*3600,allow_output_mutation=True)
+#@st.cachettl=24*3600,allow_output_mutation=True)
 def ReadDataMovilesMunicipios():
     MovilesMuni=pd.read_csv('https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/Bases/BaseMovilesMunicipio.csv')
     return MovilesMuni
@@ -403,7 +382,7 @@ BaseMovilesMunicipio['departamento']=BaseMovilesMunicipio['departamento'].replac
                                                                         'SAN ANDRES AND PROVIDENCIA':'SAN ANDRES','SANTANDER DEPARTMENT':'SANTANDER',
                                                                         'BOGOTA':'BOGOTA, D.C.','NARINO':'NARIÑO'})
 
-#@st.cache(allow_output_mutation=True)
+#@st.cacheallow_output_mutation=True)
 def MunicipiosColombia():
     gdf= gpd.read_file("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/co_2018_MGN_MPIO_POLITICO.geojson")
     gdf=gdf.rename(columns={'MPIO_CNMBR':'municipio','MPIO_CCNCT':'ID_MUNICIPIO','DPTO_CNMBR':'departamento'})
@@ -413,7 +392,7 @@ def MunicipiosColombia():
     gdf['municipio']=gdf['municipio'].replace('BOGOTA, D.C.','BOGOTA')
     return gdf
 gdf=MunicipiosColombia()
-#@st.cache(allow_output_mutation=True)
+#@st.cacheallow_output_mutation=True)
 def data_MuniColombia():    
     with urllib.request.urlopen("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/co_2018_MGN_MPIO_POLITICO.geojson") as url:
         Muni = json.loads(url.read().decode())
@@ -671,7 +650,7 @@ if select_seccion=='Resultados':
         ################################################################################################################    
         st.markdown(r"""<hr>""",unsafe_allow_html=True)
         st.markdown("<h3> Evolución temporal capitales departamentales</h3>",unsafe_allow_html=True)
-        param_Evo=st.radio('Escoja el parámetro a visualizar',['Velocidad de descarga','Velocidad de carga','Latencia','Jitter','Índice CRC'],horizontal=True)
+        param_Evo=st.radio('Escoja el parámetro a visualizar',['Índice CRC','Velocidad de descarga','Velocidad de carga','Latencia','Jitter'],horizontal=True)
         Select_ciudCapital=st.multiselect('Escoja las ciudades capitales a comparar',Ciudades_capitales)
         
         dfFijoCiudCapi=BaseFijosMunicipios[BaseFijosMunicipios['municipio'].isin(Select_ciudCapital)]
@@ -782,7 +761,7 @@ if select_seccion=='Resultados':
         ################################################################################################################    
         st.markdown(r"""<hr>""",unsafe_allow_html=True)
         st.markdown("<h3> Evolución temporal capitales departamentales</h3>",unsafe_allow_html=True)
-        param_Evo=st.radio('Escoja el parámetro a visualizar',['Velocidad de descarga','Velocidad de carga','Latencia','Jitter','Índice CRC'],horizontal=True)
+        param_Evo=st.radio('Escoja el parámetro a visualizar',['Índice CRC','Velocidad de descarga','Velocidad de carga','Latencia','Jitter'],horizontal=True)
         Select_ciudCapital=st.multiselect('Escoja las ciudades capitales a comparar',Ciudades_capitales)
         
         dfMovilCiudCapi=BaseMovilesMunicipio[BaseMovilesMunicipio['municipio'].isin(Select_ciudCapital)]
