@@ -187,6 +187,9 @@ Estilo_css="""<style type="text/css">
     .css-ocqkz7{
         gap:20px;
     }
+    .css-keje6w {
+        display: unset;
+    }
     </style>"""
 Barra_superior="""
 <div class="barra-superior">
