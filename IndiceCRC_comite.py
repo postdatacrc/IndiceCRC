@@ -25,7 +25,7 @@ LogoComision="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJI
 LogoComision2="https://www.postdata.gov.co/sites/all/themes/nuboot_radix/logo-crc-blanco.png"
 
 st.set_page_config(
-    page_title="Indice de calidad CRC", page_icon=LogoComision,layout="wide",initial_sidebar_state="expanded")
+    page_title="ICE", page_icon=LogoComision,layout="wide",initial_sidebar_state="expanded")
     
 Estilo_css="""<style type="text/css">
     @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap'); 
@@ -183,7 +183,10 @@ Estilo_css="""<style type="text/css">
         font-weight: bold;
         color: #009879;
     }    
-    hr{margin:0}
+    hr{
+        margin:0;
+        border-bottom:none;
+    }
     .css-ocqkz7{
         gap:20px;
     }
@@ -421,7 +424,7 @@ hide_dataframe_row_index = """
 # Inject CSS with Markdown
 st.markdown(hide_dataframe_row_index, unsafe_allow_html=True)
 
-st.markdown("<center><h2>Índice de calidad de la experiencia-ICE</h2></center>",unsafe_allow_html=True)
+st.markdown("<center><h2>Índice de calidad de la experiencia - ICE</h2></center>",unsafe_allow_html=True)
 select_seccion = st.selectbox('Escoja la sección del reporte',['Definición','Resultados'])   
 
 
@@ -530,8 +533,8 @@ de 0 % y un máximo de 100 % para Internet móvil. La información de este pará
 </p>
 """
 
-dict_parametros={'Velocidad de descarga':'download_speed','Velocidad de carga':'upload_speed','Latencia':'latency','Jitter':'jitter','Índice CRC':'Indice_CRC'}
-dict_parametros_unidad={'Velocidad de descarga':'(mpbs)','Velocidad de carga':'(mbps)','Latencia':'(ms)','Jitter':'(ms)','Índice CRC':'(%)'}
+dict_parametros={'Velocidad de descarga':'download_speed','Velocidad de carga':'upload_speed','Latencia':'latency','Jitter':'jitter','ICE':'Indice_CRC'}
+dict_parametros_unidad={'Velocidad de descarga':'(mpbs)','Velocidad de carga':'(mbps)','Latencia':'(ms)','Jitter':'(ms)','ICE':'(%)'}
 
 if select_seccion=='Definición':
     st.markdown("")
@@ -644,7 +647,7 @@ if select_seccion=='Resultados':
             <th></th>
             <th>Posición</th>
             <th style='width:200px'>Municipio</th>
-            <th colspan="2" style='text-align:left'>Índice CRC</th>
+            <th colspan="2" style='text-align:left'>ICE</th>
           </tr> 
           """
         def htmlcode(x,a,b):
@@ -653,7 +656,7 @@ if select_seccion=='Resultados':
             for i in x[a:b]:
                 width_linea=round(i[3]*100/maximo_Indice,2)
                 html+="""<tr><td>"""+i[0]+"""</td><td>"""+str(i[1])+"""</td><td style='text-align:left'>"""+i[2]+"""</td><td>"""+str(i[3])+"""</td>"""
-                html+="""<td style="width:300px"><hr style='background:linear-gradient(to right,#4949E7 """+str(width_linea)+"""%, #B6B6F5 """+str(width_linea)+"""%, #B6B6F5 100%);height:10px;'></td></tr>"""
+                html+="""<td style="width:300px"><hr style='background:linear-gradient(to right,#4949E7 """+str(width_linea)+"""%, #B6B6F5 """+str(width_linea)+"""%, #B6B6F5 100%);height:15px;'></td></tr>"""
             html=html+"""</table>"""    
             return html
         
@@ -688,7 +691,7 @@ if select_seccion=='Resultados':
             <th></th>
             <th>Posición</th>
             <th style='width:200px'>Municipio</th>
-            <th colspan="2" style='text-align:left'>Índice CRC</th>
+            <th colspan="2" style='text-align:left'>ICE</th>
           </tr> 
           """
         def htmlcodeMovil(x,a,b):
@@ -697,7 +700,7 @@ if select_seccion=='Resultados':
             for i in x[a:b]:
                 width_linea=round(i[3]*100/maximo_Indice,2)
                 html+="""<tr><td>"""+i[0]+"""</td><td>"""+str(i[1])+"""</td><td style='text-align:left'>"""+i[2]+"""</td><td>"""+str(i[3])+"""</td>"""
-                html+="""<td style="width:300px"><hr style='background:linear-gradient(to right,#39B399 """+str(width_linea)+"""%, #ADE5D9 """+str(width_linea)+"""%, #ADE5D9 100%);height:10px;'></td></tr>"""
+                html+="""<td style="width:300px"><hr style='background:linear-gradient(to right,#39B399 """+str(width_linea)+"""%, #ADE5D9 """+str(width_linea)+"""%, #ADE5D9 100%);height:15px;'></td></tr>"""
             html=html+"""</table>"""    
             return html   
         
@@ -709,7 +712,7 @@ if select_seccion=='Resultados':
     
     st.markdown("<h3> Evolución temporal capitales departamentales</h3>",unsafe_allow_html=True) 
     st.markdown(r"""<hr>""",unsafe_allow_html=True)
-    param_Evo=st.radio('Escoja el parámetro a visualizar',['Índice CRC','Velocidad de descarga','Velocidad de carga','Latencia','Jitter'],horizontal=True)
+    param_Evo=st.radio('Escoja el parámetro a visualizar',['ICE','Velocidad de descarga','Velocidad de carga','Latencia','Jitter'],horizontal=True)
     Select_ciudCapital=st.multiselect('Escoja las ciudades capitales a comparar',Ciudades_capitales) 
     col1d,col2d=st.columns(2)
 
@@ -729,7 +732,7 @@ if select_seccion=='Resultados':
         fig_ciudadesEv.update_layout(height=550,legend_title=None)
         fig_ciudadesEv.update_layout(font_color="Black",font_family="Poppins",title_font_color="Black",titlefont_size=16,
         title={
-        'text':param_Evo+' por ciudad de Internet fijo',
+        'text':param_Evo+' por ciudad - Internet fijo',
         'y':0.9,
         'x':0.5,
         'xanchor': 'center',
@@ -763,7 +766,7 @@ if select_seccion=='Resultados':
         fig_ciudadesEvMovil.update_layout(height=550,legend_title=None)
         fig_ciudadesEvMovil.update_layout(font_color="Black",font_family="Poppins",title_font_color="Black",titlefont_size=16,
         title={
-        'text':param_Evo+' por ciudad de Internet móvil',
+        'text':param_Evo+' por ciudad - Internet móvil',
         'y':0.9,
         'x':0.5,
         'xanchor': 'center',
