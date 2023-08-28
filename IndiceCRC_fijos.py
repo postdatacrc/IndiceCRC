@@ -354,7 +354,7 @@ BaseFijosMunicipios['Indice_CRC']=BaseFijosMunicipios['Indice_Descarga']+BaseFij
 BaseFijosMunicipios[['download_speed','upload_speed','latency','jitter','Indice_CRC']]=BaseFijosMunicipios[['download_speed','upload_speed','latency','jitter','Indice_CRC']]
 BaseFijosMunicipios['municipio']=BaseFijosMunicipios['municipio'].apply(lambda x:unidecode.unidecode(x).upper())
 
-@st.cache(allow_output_mutation=True)
+#@st.cache(allow_output_mutation=True)
 def data_MuniColombia():    
     with urllib.request.urlopen("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/co_2018_MGN_MPIO_POLITICO.geojson") as url:
         Muni = json.loads(url.read().decode())
@@ -399,7 +399,7 @@ List_capitales=list(capitales_departamento.values())
 
 Intro_Sec1=r"""<p style='text-align:justify'> 
 El índice de calidad de la experiencia -ICE- busca dar a conocer el comportamiento de las capitales de departamento del país que cuentan con las mejores 
-condiciones en términos de calidad que experimenta el usuario en el servicio de Internet prestado a través de redes de acceso móvil y fijo.
+condiciones en términos de calidad que experimenta el usuario en el servicio de Internet prestado a través de redes de acceso fijo.
 </p>
 """
 
@@ -407,8 +407,7 @@ Intro_Sec2=r"""<p style='text-align:justify'>
 Teniendo en cuenta lo estipulado en la regulación vigente, la CRC ha estado utilizando la metodología de Crowdsourcing para capturar información de indicadores
 de calidad directamente de los equipos terminales de los usuarios. En ese sentido, y con la finalidad de entregar a los usuarios información técnica de una 
 manera más sencilla, nace la idea de consolidar los parámetros para la construcción de un índice, en aras de facilitar la lectura y entendimiento de la 
-calidad de los servicios que prestan los operados a los usuarios, para este caso, se definirá un índice para la calidad del servicio de Internet móvil y un 
-índice para Internet fijo.
+calidad de los servicios que prestan los operados a los usuarios, para este caso, únicamente se definirá un índice para la calidad del servicio de Internet fijo.
 </p>
 """
 
@@ -423,7 +422,7 @@ de tal manera que esta refleje la verdadera experiencia del usuario.
 Intro_Sec4=r"""<p style='text-align:justify'> 
 Considerando las recomendaciones y buenas prácticas contenidas en el mencionado reporte técnico de la ETSI, la CRC diseñó el índice de calidad de la 
 experiencia con el propósito de reducir la asimetría de la información hacia el usuario, de tal manera que pueda tomar decisiones bien informado, respecto de 
-la contratación de los servicios de Internet móvil e Internet fijo. 
+la contratación de los servicios de Internet fijo. 
 </p>
 """
 
