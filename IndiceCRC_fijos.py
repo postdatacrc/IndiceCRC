@@ -354,7 +354,7 @@ BaseFijosMunicipios['Indice_CRC']=BaseFijosMunicipios['Indice_Descarga']+BaseFij
 BaseFijosMunicipios[['download_speed','upload_speed','latency','jitter','Indice_CRC']]=BaseFijosMunicipios[['download_speed','upload_speed','latency','jitter','Indice_CRC']]
 BaseFijosMunicipios['municipio']=BaseFijosMunicipios['municipio'].apply(lambda x:unidecode.unidecode(x).upper())
 
-#@st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True)
 def data_MuniColombia():    
     with urllib.request.urlopen("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/co_2018_MGN_MPIO_POLITICO.geojson") as url:
         Muni = json.loads(url.read().decode())
@@ -428,15 +428,14 @@ la contratación de los servicios de Internet móvil e Internet fijo.
 """
 
 Intro_Sec5=r""" <p style='text-align:justify'>
-Adicionalmente, el ICE busca también incentivar la mejora continua de la calidad de los servicios de Internet fijo y móvil que se prestan a los usuarios, 
-considerando para tal efecto los cinco (5) siguientes parámetros:
+Adicionalmente, el ICE busca también incentivar la mejora continua de la calidad de los servicios de Internet fijo que se prestan a los usuarios, 
+considerando para tal efecto los cuatro (4) siguientes parámetros:
 <center>
 <ul>
 <li>Velocidad de descarga
 <li>Velocidad de carga
 <li>Latencia
 <li>Jitter
-<li>Tasa de pérdida de paquetes
 </ul>
 </center>
 </p>
@@ -517,20 +516,14 @@ if select_seccion=='Definición':
         with st.expander('Jitter'):
             st.markdown(Jitter_Info,unsafe_allow_html=True)
     col1,col2=st.columns(2) 
-    with col1:
-        with st.expander('Tasa pérdida paquetes'):
-            st.markdown(TPerida_paquetes_Info,unsafe_allow_html=True)
 
     st.markdown(r"""<p style='text-align:justify'>El cálculo del ICE está conformado por la sumatoria de la relación del valor de la medición y el valor de normalización y 
     el producto con el ponderador de cada uno de los indicadores. En las tablas 1 y 2 se pueden observar estos ponderadores, así como los valores de 
     normalización indicados previamente.</p>""",unsafe_allow_html=True)    
     
-    col1,col2=st.columns(2)
-    with col1:
-        st.markdown("<p style='font-size:11px;text-align:center'><b>Tabla 1:</b> Valores de referencia para el cálculo del ICE para el servicio de Internet móvil</p>",unsafe_allow_html=True)
-        st.image("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/ICE%20Movil2.png")
+    col1,col2,col3=st.columns(3)
     with col2:
-        st.markdown("<p style='font-size:11px;text-align:center'><b>Tabla 2:</b> Valores de referencia para el cálculo del ICE para el servicio de Internet fijo</p>",unsafe_allow_html=True)
+        st.markdown("<p style='font-size:11px;text-align:center'><b>Tabla 1:</b> Valores de referencia para el cálculo del ICE para el servicio de Internet fijo</p>",unsafe_allow_html=True)
         st.image("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/ICE%20Fijo2.png")
         
 if select_seccion=='Resultados':
@@ -559,7 +552,11 @@ if select_seccion=='Resultados':
             second_period=periodos_posiciones[periodos_posiciones.index(select_periodoComp1)+1]
         else:
             second_period=select_periodoComp1
-   
+    
+    #select_periodoComp=st.multiselect('Escoja dos periodos a comparar',periodos_posiciones,['2023-06','2022-06'])
+    #per0=sorted(select_periodoComp)[0]
+    #per1=sorted(select_periodoComp)[1]
+    
     st.markdown("""<p style='font-size:12px'><b>Nota</b>: El cambio en la posición se compara respecto al periodo inmediatamente anterior</p>""",unsafe_allow_html=True)
         
     prueba1=BaseFijosMunicipios[(BaseFijosMunicipios['periodo']==select_periodoComp1)&(BaseFijosMunicipios['municipio']!='COLOMBIA')].sort_values(by=['Indice_CRC'],ascending=False).reset_index()
