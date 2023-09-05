@@ -215,21 +215,20 @@ def standardize_date(date):
     date=month+'-'+year
     return date
 ## Definiciones Fijos
-
 def DownloadFIJO(x):
     min_down=25;max_down=500;weight_down=0.40
-    if x>max_down:
+    if x>=max_down:
         y=100*weight_down
-    elif x<min_down:
+    elif x<=min_down:
         y=0
     else:    
         y=100*weight_down*(x-min_down)/(max_down-min_down)
     return y
 def UploadFIJO(x):
     min_up=5;max_up=500;weight_up=0.25
-    if x>max_up:
+    if x>=max_up:
         y=100*weight_up
-    elif x<min_up:
+    elif x<=min_up:
         y=0
     else:    
         y=100*weight_up*(x-min_up)/(max_up-min_up)
@@ -326,7 +325,7 @@ def cambiopos(x):
 
 #@st.cache(ttl=24*3600,allow_output_mutation=True)
 def ReadDataFijoMunicipios():
-    FijosCapDep=pd.read_csv('https://raw.githubusercontent.com/postdatacrc/Mediciones_QoE/main/2023/Fijo/fixed_CapDep.csv',delimiter=';')    
+    FijosCapDep=pd.read_csv('https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/Bases/fixed_CapDep.csv',delimiter=';')    
     return FijosCapDep
 BaseFijosMunicipios=ReadDataFijoMunicipios()
 
