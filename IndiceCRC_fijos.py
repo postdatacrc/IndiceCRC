@@ -505,9 +505,6 @@ if select_seccion=='Resultados':
     st.markdown("")
     st.title("Resultados ICE") 
     st.markdown(r"""<hr style='border:1px solid #FE9D82'>""",unsafe_allow_html=True)
-                    
-    
-    st.markdown("<h3> Comparación posiciones de ciudades por periodo</h3>",unsafe_allow_html=True) 
     st.markdown(r"""<hr>""",unsafe_allow_html=True) 
 
     BaseFijosMunicipios['Indice_CRC']=round(BaseFijosMunicipios['Indice_CRC'],2)
@@ -515,107 +512,105 @@ if select_seccion=='Resultados':
     BaseFijosMunicipios=BaseFijosMunicipios.sort_values(by=['periodo'],ascending=False)
     Ciudades_capitales=sorted(BaseFijosMunicipios['municipio'].unique().tolist())    
     
-    #
-           
-    periodos_posiciones=BaseFijosMunicipios['periodo'].unique().tolist()        
-    
-    col1b,col2b,col3b=st.columns(3)
-    with col2b:
-        select_periodoComp1=st.selectbox('Escoja un periodo',periodos_posiciones,0)
-        if periodos_posiciones.index(select_periodoComp1)<len(periodos_posiciones)-1:
-            second_period=periodos_posiciones[periodos_posiciones.index(select_periodoComp1)+1]
-        else:
-            second_period=select_periodoComp1
-    
-    #select_periodoComp=st.multiselect('Escoja dos periodos a comparar',periodos_posiciones,['2023-06','2022-06'])
-    #per0=sorted(select_periodoComp)[0]
-    #per1=sorted(select_periodoComp)[1]
-    
-    st.markdown("""<p style='font-size:12px'><b>Nota</b>: El cambio en la posición se compara respecto al periodo inmediatamente anterior</p>""",unsafe_allow_html=True)
+    tab1,tab2=st.tabs(['Tabla posiciones','Evolución por ciudades'])
+    with tab1:
+        st.markdown("<center><h3>Posiciones de ciudades por periodo</h3></center>",unsafe_allow_html=True)
+        periodos_posiciones=BaseFijosMunicipios['periodo'].unique().tolist()        
         
-    prueba1=BaseFijosMunicipios[(BaseFijosMunicipios['periodo']==select_periodoComp1)&(BaseFijosMunicipios['municipio']!='COLOMBIA')].sort_values(by=['Indice_CRC'],ascending=False).reset_index()
-    prueba1['posición']=prueba1.index+1
-    prueba1=prueba1[['periodo','municipio','Indice_CRC','posición','download_speed','upload_speed','latency','jitter']]
-    prueba1[['download_speed','upload_speed','latency','jitter']]=round(prueba1[['download_speed','upload_speed','latency','jitter']],2)
-    replace_colname={'download_speed':'Vel descarga '+select_periodoComp1,'upload_speed':'Vel carga '+select_periodoComp1,'latency':'Latencia '+select_periodoComp1,'jitter':'Jitter '+select_periodoComp1}
-    prueba1=prueba1.rename(columns=replace_colname)
-    
-    prueba2=BaseFijosMunicipios[(BaseFijosMunicipios['periodo']==second_period)&(BaseFijosMunicipios['municipio']!='COLOMBIA')].sort_values(by=['Indice_CRC'],ascending=False).reset_index()
-    prueba2['posición']=prueba2.index+1
-    prueba2=prueba2[['periodo','municipio','Indice_CRC','posición']]
-
-    Compara_Ciudad=prueba1.merge(prueba2, left_on=['municipio'],right_on=['municipio'])
-    Compara_Ciudad['Cambio_indice']=round((Compara_Ciudad['Indice_CRC_x']-Compara_Ciudad['Indice_CRC_y']),2)   
-    Compara_Ciudad['Cambio posición']=Compara_Ciudad['posición_y']-Compara_Ciudad['posición_x']
-    Compara_Ciudad['Cambio posición']=Compara_Ciudad['Cambio posición'].apply(cambiopos)
-    Compara_Ciudad=Compara_Ciudad.sort_values(by=['posición_x'],ascending=True)
-    
-    
-    BaseFijosMunicipios2=BaseFijosMunicipios.copy()[['periodo','municipio','Indice_CRC']]
+        col1b,col2b,col3b=st.columns(3)
+        with col2b:
+            select_periodoComp1=st.selectbox('Escoja un periodo',periodos_posiciones,0)
+            if periodos_posiciones.index(select_periodoComp1)<len(periodos_posiciones)-1:
+                second_period=periodos_posiciones[periodos_posiciones.index(select_periodoComp1)+1]
+            else:
+                second_period=select_periodoComp1
+        
+        #select_periodoComp=st.multiselect('Escoja dos periodos a comparar',periodos_posiciones,['2023-06','2022-06'])
+        #per0=sorted(select_periodoComp)[0]
+        #per1=sorted(select_periodoComp)[1]
+        
+        st.markdown("""<p style='font-size:12px'><b>Nota</b>: El cambio en la posición se compara respecto al periodo inmediatamente anterior</p>""",unsafe_allow_html=True)
             
-    pruebaHTML=Compara_Ciudad[['Cambio posición','posición_x','municipio','Indice_CRC_x']]
-    pruebaHTML['barra']=""
-    pruebaHTML=pruebaHTML.values.tolist()
-    Title="""<table class='styled-table'>
-      <tr>
-        <th></th>
-        <th>Posición</th>
-        <th style='width:200px'>Municipio</th>
-        <th colspan="2" style='text-align:left'>ICE</th>
-      </tr> 
-      """
-    def htmlcode(x,a,b):
-        html=""
-        maximo_Indice=max([i[3] for i in x])
-        for i in x[a:b]:
-            width_linea=round(i[3]*100/maximo_Indice,2)
-            html+="""<tr><td>"""+i[0]+"""</td><td>"""+str(i[1])+"""</td><td style='text-align:left'>"""+i[2]+"""</td><td>"""+str(i[3])+"""</td>"""
-            html+="""<td style="width:300px"><hr style='background:linear-gradient(to right,#4949E7 """+str(width_linea)+"""%, #B6B6F5 """+str(width_linea)+"""%, #B6B6F5 100%);height:15px;'></td></tr>"""
-        html=html+"""</table>"""    
-        return html
+        prueba1=BaseFijosMunicipios[(BaseFijosMunicipios['periodo']==select_periodoComp1)&(BaseFijosMunicipios['municipio']!='COLOMBIA')].sort_values(by=['Indice_CRC'],ascending=False).reset_index()
+        prueba1['posición']=prueba1.index+1
+        prueba1=prueba1[['periodo','municipio','Indice_CRC','posición','download_speed','upload_speed','latency','jitter']]
+        prueba1[['download_speed','upload_speed','latency','jitter']]=round(prueba1[['download_speed','upload_speed','latency','jitter']],2)
+        replace_colname={'download_speed':'Vel descarga '+select_periodoComp1,'upload_speed':'Vel carga '+select_periodoComp1,'latency':'Latencia '+select_periodoComp1,'jitter':'Jitter '+select_periodoComp1}
+        prueba1=prueba1.rename(columns=replace_colname)
         
-    st.markdown("<center><h2 style='color:#4949E7'>Internet fijo</h2></center>",unsafe_allow_html=True)
-    st.markdown(Title+htmlcode(pruebaHTML,0,len(pruebaHTML)),unsafe_allow_html=True)  
+        prueba2=BaseFijosMunicipios[(BaseFijosMunicipios['periodo']==second_period)&(BaseFijosMunicipios['municipio']!='COLOMBIA')].sort_values(by=['Indice_CRC'],ascending=False).reset_index()
+        prueba2['posición']=prueba2.index+1
+        prueba2=prueba2[['periodo','municipio','Indice_CRC','posición']]
+
+        Compara_Ciudad=prueba1.merge(prueba2, left_on=['municipio'],right_on=['municipio'])
+        Compara_Ciudad['Cambio_indice']=round((Compara_Ciudad['Indice_CRC_x']-Compara_Ciudad['Indice_CRC_y']),2)   
+        Compara_Ciudad['Cambio posición']=Compara_Ciudad['posición_y']-Compara_Ciudad['posición_x']
+        Compara_Ciudad['Cambio posición']=Compara_Ciudad['Cambio posición'].apply(cambiopos)
+        Compara_Ciudad=Compara_Ciudad.sort_values(by=['posición_x'],ascending=True)
+        
+        
+        BaseFijosMunicipios2=BaseFijosMunicipios.copy()[['periodo','municipio','Indice_CRC']]
+                
+        pruebaHTML=Compara_Ciudad[['Cambio posición','posición_x','municipio','Indice_CRC_x']]
+        pruebaHTML['barra']=""
+        pruebaHTML=pruebaHTML.values.tolist()
+        Title="""<table class='styled-table'>
+          <tr>
+            <th></th>
+            <th>Posición</th>
+            <th style='width:200px'>Municipio</th>
+            <th colspan="2" style='text-align:left'>ICE</th>
+          </tr> 
+          """
+        def htmlcode(x,a,b):
+            html=""
+            maximo_Indice=max([i[3] for i in x])
+            for i in x[a:b]:
+                width_linea=round(i[3]*100/maximo_Indice,2)
+                html+="""<tr><td>"""+i[0]+"""</td><td>"""+str(i[1])+"""</td><td style='text-align:left'>"""+i[2]+"""</td><td>"""+str(i[3])+"""</td>"""
+                html+="""<td style="width:300px"><hr style='background:linear-gradient(to right,#4949E7 """+str(width_linea)+"""%, #B6B6F5 """+str(width_linea)+"""%, #B6B6F5 100%);height:15px;'></td></tr>"""
+            html=html+"""</table>"""    
+            return html
+            
+        
+        st.markdown(Title+htmlcode(pruebaHTML,0,len(pruebaHTML)),unsafe_allow_html=True)  
         
     ################################################################################################################     
 
-    
-    st.markdown("<h3> Evolución temporal capitales departamentales</h3>",unsafe_allow_html=True) 
-    st.markdown(r"""<hr>""",unsafe_allow_html=True)
-    param_Evo=st.radio('Escoja el parámetro a visualizar',['ICE','Velocidad de descarga','Velocidad de carga','Latencia','Jitter'],horizontal=True)
-    Select_ciudCapital=st.multiselect('Escoja las ciudades capitales a comparar',Ciudades_capitales,['BOGOTA']) 
+    with tab2:
+        st.markdown("<center><h3>Evolución temporal capitales departamentales</h3></center>",unsafe_allow_html=True)
+        #st.markdown("<h3> Evolución temporal capitales departamentales</h3>",unsafe_allow_html=True) 
+        st.markdown(r"""<hr>""",unsafe_allow_html=True)
+        param_Evo=st.radio('Escoja el parámetro a visualizar',['ICE','Velocidad de descarga','Velocidad de carga','Latencia','Jitter'],horizontal=True)
+        Select_ciudCapital=st.multiselect('Escoja las ciudades capitales a comparar',Ciudades_capitales,['BOGOTA']) 
 
-    dfFijoCiudCapi=BaseFijosMunicipios[BaseFijosMunicipios['municipio'].isin(Select_ciudCapital)]
-    dfFijoCiudCapi=dfFijoCiudCapi[['periodo','municipio',dict_parametros[param_Evo]]]
-    fig_ciudadesEv=make_subplots(rows=1,cols=1)
-    for ciudad in Select_ciudCapital:
-        dfFijoCiudCapi2=dfFijoCiudCapi[dfFijoCiudCapi['municipio']==ciudad]
-        fig_ciudadesEv.add_trace(go.Scatter(x=dfFijoCiudCapi2['periodo'],y=dfFijoCiudCapi2[dict_parametros[param_Evo]],mode='lines+markers',name=ciudad,hovertemplate='<br><b>Ciudad: </b><extra></extra>'+ciudad+'<br>'+param_Evo+': %{y:.2f}'+'<br>'+'Periodo : %{x}'))
-    fig_ciudadesEv.update_yaxes(tickfont=dict(family='Poppins', color='black', size=16),titlefont_size=16, title_text=param_Evo+' '+dict_parametros_unidad[param_Evo], row=1, col=1)
-    fig_ciudadesEv.update_xaxes(tickangle=0, tickfont=dict(family='Poppins', color='black', size=14),title_text='Fecha (mes/año)',row=1, col=1
-    ,zeroline=True,linecolor = 'rgba(192, 192, 192, 0.8)',zerolinewidth=2)
-    fig_ciudadesEv.update_layout(height=550,legend_title=None)
-    fig_ciudadesEv.update_layout(font_color="Black",font_family="Poppins",title_font_color="Black",titlefont_size=16,
-    title={
-    'text':param_Evo+' por ciudad - Internet fijo',
-    'y':0.9,
-    'x':0.5,
-    'xanchor': 'center',
-    'yanchor': 'top'})        
-    fig_ciudadesEv.update_layout(legend=dict(orientation="h",y=1.07,x=0.01,font_size=11),showlegend=True)
-    fig_ciudadesEv.update_layout(paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)')
-    fig_ciudadesEv.update_yaxes(showgrid=True, gridwidth=1, gridcolor='rgba(192, 192, 192, 0.8)')
-    fig_ciudadesEv.update_layout(yaxis_tickformat ='0,.1f')
-    fig_ciudadesEv.update_layout(xaxis_tickformat ='%m/%y')
-    fig_ciudadesEv.add_annotation(
-    showarrow=False,
-    text='',
-    font=dict(size=11), xref='x domain',x=0.5,yref='y domain',y=-0.2) 
-    st.plotly_chart(fig_ciudadesEv,use_container_width=True)
-    st.download_button(label="Descargar CSV",data=convert_df(dfFijoCiudCapi),file_name='EvolucionIntFijo.csv',mime='text/csv')
-        
- 
-
-
-    st.markdown("<p style='font-size:12px;text-align:center'><b>Nota:</b> Resultados basados en el análisis realizado por CRC de los datos de Speedtest Intelligence® para 2023 - 2023/1S. </p>",unsafe_allow_html=True)
+        dfFijoCiudCapi=BaseFijosMunicipios[BaseFijosMunicipios['municipio'].isin(Select_ciudCapital)]
+        dfFijoCiudCapi=dfFijoCiudCapi[['periodo','municipio',dict_parametros[param_Evo]]]
+        fig_ciudadesEv=make_subplots(rows=1,cols=1)
+        for ciudad in Select_ciudCapital:
+            dfFijoCiudCapi2=dfFijoCiudCapi[dfFijoCiudCapi['municipio']==ciudad]
+            fig_ciudadesEv.add_trace(go.Scatter(x=dfFijoCiudCapi2['periodo'],y=dfFijoCiudCapi2[dict_parametros[param_Evo]],mode='lines+markers',name=ciudad,hovertemplate='<br><b>Ciudad: </b><extra></extra>'+ciudad+'<br>'+param_Evo+': %{y:.2f}'+'<br>'+'Periodo : %{x}'))
+        fig_ciudadesEv.update_yaxes(tickfont=dict(family='Poppins', color='black', size=16),titlefont_size=16, title_text=param_Evo+' '+dict_parametros_unidad[param_Evo], row=1, col=1)
+        fig_ciudadesEv.update_xaxes(tickangle=0, tickfont=dict(family='Poppins', color='black', size=14),title_text='Fecha (mes/año)',row=1, col=1
+        ,zeroline=True,linecolor = 'rgba(192, 192, 192, 0.8)',zerolinewidth=2)
+        fig_ciudadesEv.update_layout(height=550,legend_title=None)
+        fig_ciudadesEv.update_layout(font_color="Black",font_family="Poppins",title_font_color="Black",titlefont_size=16,
+        title={
+        'text':param_Evo+' por ciudad - Internet fijo',
+        'y':0.9,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'})        
+        fig_ciudadesEv.update_layout(legend=dict(orientation="h",y=1.07,x=0.01,font_size=11),showlegend=True)
+        fig_ciudadesEv.update_layout(paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)')
+        fig_ciudadesEv.update_yaxes(showgrid=True, gridwidth=1, gridcolor='rgba(192, 192, 192, 0.8)')
+        fig_ciudadesEv.update_layout(yaxis_tickformat ='0,.1f')
+        fig_ciudadesEv.update_layout(xaxis_tickformat ='%m/%y')
+        fig_ciudadesEv.add_annotation(
+        showarrow=False,
+        text='',
+        font=dict(size=11), xref='x domain',x=0.5,yref='y domain',y=-0.2) 
+        st.plotly_chart(fig_ciudadesEv,use_container_width=True)
+        st.download_button(label="Descargar CSV",data=convert_df(dfFijoCiudCapi),file_name='EvolucionIntFijo.csv',mime='text/csv')
+        st.markdown("<p style='font-size:12px;text-align:center'><b>Nota:</b> Resultados basados en el análisis realizado por CRC de los datos de Speedtest Intelligence® para 2023 - 2023/1S. </p>",unsafe_allow_html=True)
             
