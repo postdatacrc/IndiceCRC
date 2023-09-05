@@ -223,7 +223,7 @@ def DownloadFIJO(x):
     elif x<min_down:
         y=0
     else:    
-        y= y=(x/max_down)*100*weight_down
+        y=100*weight_down*(x-min_down)/(max_down-min_down)
     return y
 def UploadFIJO(x):
     min_up=5;max_up=500;weight_up=0.25
@@ -232,7 +232,7 @@ def UploadFIJO(x):
     elif x<min_up:
         y=0
     else:    
-        y= y=(x/max_up)*100*weight_up
+        y=100*weight_up*(x-min_up)/(max_up-min_up)
     return y
 def LatencyFIJO(x):
     min_Lat=25;max_Lat=100;weight_Lat=0.25
@@ -327,32 +327,8 @@ def cambiopos(x):
 #@st.cache(ttl=24*3600,allow_output_mutation=True)
 def ReadDataFijoMunicipios():
     FijosCapDep=pd.read_csv('https://raw.githubusercontent.com/postdatacrc/Mediciones_QoE/main/2023/Fijo/fixed_CapDep.csv',delimiter=';')    
-    FijosCapDep.rename(columns={'Provider':'provider','Location':'municipio','Minimum Latency':'latency','Multi-Server Jitter':'jitter','Download Speed Mbps':'download_speed','Upload Speed Mbps':'upload_speed'},inplace=True)
-    FijosCapDep['municipio']=FijosCapDep['municipio'].str.upper()
-    FijosCapDep['Aggregate Date']=FijosCapDep['Aggregate Date'].apply(standardize_date)
-    FeAntigFijoTCP= sorted(FijosCapDep['Aggregate Date'].unique(),key=lambda x: datetime.datetime.strptime(x, '%b-%Y')) #Generar las fechas que tenían los datos
-    FeCorreFijoTCP=pd.date_range('2022-01-01','2023-06-01', 
-                  freq='MS').strftime("%d-%b-%y").tolist() #lista de fechas en el periodo seleccionado
-    dictionFijoTCP=dict(zip(FeAntigFijoTCP, FeCorreFijoTCP))
-    FijosCapDep['Aggregate Date'].replace(dictionFijoTCP, inplace=True) #Reemplazar fechas antiguas por nuevas
-    FijosCapDep['Aggregate Date'] =pd.to_datetime(FijosCapDep['Aggregate Date']).dt.floor('d') 
-    FijosCapDep['mes']=pd.DatetimeIndex(FijosCapDep['Aggregate Date']).month
-    FijosCapDep['año']=pd.DatetimeIndex(FijosCapDep['Aggregate Date']).year
-    FijosCapDep['periodo']=FijosCapDep['año'].astype('str')+'-'+FijosCapDep['mes'].astype('str').str.zfill(2)
-    FijosCapDep['municipio']=FijosCapDep['municipio'].str.split(',',expand=True)[0]#Guardar sólo las ciudades
-    FijosCapDep=FijosCapDep[(FijosCapDep['periodo']>'2021-12')&(FijosCapDep['periodo']<'2023-07')&(FijosCapDep['Test Count']>=30)]    
     return FijosCapDep
-
 BaseFijosMunicipios=ReadDataFijoMunicipios()
-BaseFijosMunicipios['latency']=BaseFijosMunicipios['latency'].astype('str').str.replace(',','.').astype('float')
-BaseFijosMunicipios['jitter']=BaseFijosMunicipios['jitter'].astype('str').str.replace(',','.').astype('float')
-BaseFijosMunicipios['Indice_Descarga']=BaseFijosMunicipios['download_speed'].apply(DownloadFIJO)
-BaseFijosMunicipios['Indice_Carga']=BaseFijosMunicipios['upload_speed'].apply(UploadFIJO)
-BaseFijosMunicipios['Indice_Latencia']=BaseFijosMunicipios['latency'].apply(LatencyFIJO)
-BaseFijosMunicipios['Indice_Jitter']=BaseFijosMunicipios['jitter'].apply(JitterFIJO)
-BaseFijosMunicipios['Indice_CRC']=BaseFijosMunicipios['Indice_Descarga']+BaseFijosMunicipios['Indice_Carga']+BaseFijosMunicipios['Indice_Latencia']+BaseFijosMunicipios['Indice_Jitter']
-BaseFijosMunicipios[['download_speed','upload_speed','latency','jitter','Indice_CRC']]=BaseFijosMunicipios[['download_speed','upload_speed','latency','jitter','Indice_CRC']]
-BaseFijosMunicipios['municipio']=BaseFijosMunicipios['municipio'].apply(lambda x:unidecode.unidecode(x).upper())
 
 #@st.cache(allow_output_mutation=True)
 def data_MuniColombia():    
@@ -534,7 +510,6 @@ if select_seccion=='Resultados':
     st.markdown("<h3> Comparación posiciones de ciudades por periodo</h3>",unsafe_allow_html=True) 
     st.markdown(r"""<hr>""",unsafe_allow_html=True) 
 
-    BaseFijosMunicipios=BaseFijosMunicipios[(BaseFijosMunicipios['provider']=='All Providers Combined')]
     BaseFijosMunicipios['Indice_CRC']=round(BaseFijosMunicipios['Indice_CRC'],2)
     BaseFijosMunicipios['municipio']=BaseFijosMunicipios['municipio'].replace({'SAN JOSE DEL GUAVIARE':'SJ. GUAVIARE'})
     BaseFijosMunicipios=BaseFijosMunicipios.sort_values(by=['periodo'],ascending=False)
@@ -608,7 +583,7 @@ if select_seccion=='Resultados':
     st.markdown("<h3> Evolución temporal capitales departamentales</h3>",unsafe_allow_html=True) 
     st.markdown(r"""<hr>""",unsafe_allow_html=True)
     param_Evo=st.radio('Escoja el parámetro a visualizar',['ICE','Velocidad de descarga','Velocidad de carga','Latencia','Jitter'],horizontal=True)
-    Select_ciudCapital=st.multiselect('Escoja las ciudades capitales a comparar',Ciudades_capitales,['COLOMBIA']) 
+    Select_ciudCapital=st.multiselect('Escoja las ciudades capitales a comparar',Ciudades_capitales,['BOGOTA']) 
 
     dfFijoCiudCapi=BaseFijosMunicipios[BaseFijosMunicipios['municipio'].isin(Select_ciudCapital)]
     dfFijoCiudCapi=dfFijoCiudCapi[['periodo','municipio',dict_parametros[param_Evo]]]
@@ -630,7 +605,7 @@ if select_seccion=='Resultados':
     fig_ciudadesEv.update_layout(legend=dict(orientation="h",y=1.07,x=0.01,font_size=11),showlegend=True)
     fig_ciudadesEv.update_layout(paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)')
     fig_ciudadesEv.update_yaxes(showgrid=True, gridwidth=1, gridcolor='rgba(192, 192, 192, 0.8)')
-    fig_ciudadesEv.update_layout(yaxis_tickformat ='d')
+    fig_ciudadesEv.update_layout(yaxis_tickformat ='0,.1f')
     fig_ciudadesEv.update_layout(xaxis_tickformat ='%m/%y')
     fig_ciudadesEv.add_annotation(
     showarrow=False,
