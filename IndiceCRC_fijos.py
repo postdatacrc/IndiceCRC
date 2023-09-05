@@ -10,6 +10,7 @@ from urllib.request import urlopen
 import json
 from streamlit_folium import folium_static
 from st_aggrid import AgGrid, JsCode
+import itertools
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 import geopandas as gpd
 import folium
@@ -509,13 +510,12 @@ if select_seccion=='Resultados':
     BaseFijosMunicipios['Indice_CRC']=round(BaseFijosMunicipios['Indice_CRC'],2)
     BaseFijosMunicipios['municipio']=BaseFijosMunicipios['municipio'].replace({'SAN JOSE DEL GUAVIARE':'SJ. GUAVIARE'})
     BaseFijosMunicipios=BaseFijosMunicipios.sort_values(by=['periodo'],ascending=False)
+    periodos_posiciones=BaseFijosMunicipios['periodo'].unique().tolist()
     Ciudades_capitales=sorted(BaseFijosMunicipios['municipio'].unique().tolist())    
     
     tab1,tab2=st.tabs(['Tabla posiciones','Evolución por ciudades'])
     with tab1:
         st.markdown("<center><h3>Posiciones de ciudades por periodo</h3></center>",unsafe_allow_html=True)
-        periodos_posiciones=BaseFijosMunicipios['periodo'].unique().tolist()        
-        
         col1b,col2b,col3b=st.columns(3)
         with col2b:
             select_periodoComp1=st.selectbox('Escoja un periodo',periodos_posiciones,0)
@@ -582,9 +582,16 @@ if select_seccion=='Resultados':
         st.markdown(r"""<hr>""",unsafe_allow_html=True)
         param_Evo=st.radio('Escoja el parámetro a visualizar',['ICE','Velocidad de descarga','Velocidad de carga','Latencia','Jitter'],horizontal=True)
         Select_ciudCapital=st.multiselect('Escoja las ciudades capitales a comparar',Ciudades_capitales,['BOGOTA']) 
+        
 
         dfFijoCiudCapi=BaseFijosMunicipios[BaseFijosMunicipios['municipio'].isin(Select_ciudCapital)]
         dfFijoCiudCapi=dfFijoCiudCapi[['periodo','municipio',dict_parametros[param_Evo]]]
+        unique_municipios = dfFijoCiudCapi['municipio'].unique()
+        combinations = list(itertools.product(periodos_posiciones, unique_municipios))
+        #
+        template_df = pd.DataFrame(combinations, columns=['periodo', 'municipio'])
+        dfFijoCiudCapi = pd.merge(template_df, dfFijoCiudCapi, on=['periodo', 'municipio'], how='left')
+       
         fig_ciudadesEv=make_subplots(rows=1,cols=1)
         for ciudad in Select_ciudCapital:
             dfFijoCiudCapi2=dfFijoCiudCapi[dfFijoCiudCapi['municipio']==ciudad]
