@@ -516,28 +516,26 @@ if select_seccion=='Resultados':
     tab1,tab2=st.tabs(['Tabla posiciones','Evolución por ciudades'])
     with tab1:
         st.markdown("<center><h3>Posiciones de ciudades por periodo</h3></center>",unsafe_allow_html=True)
-        col1b,col2b,col3b=st.columns(3)
+        col1b,col2b,col3b,colb4=st.columns(4)
         with col2b:
-            select_periodoComp1=st.selectbox('Escoja un periodo',periodos_posiciones,0)
-            if periodos_posiciones.index(select_periodoComp1)<len(periodos_posiciones)-1:
-                second_period=periodos_posiciones[periodos_posiciones.index(select_periodoComp1)+1]
-            else:
-                second_period=select_periodoComp1
-        
-        #select_periodoComp=st.multiselect('Escoja dos periodos a comparar',periodos_posiciones,['2023-06','2022-06'])
-        #per0=sorted(select_periodoComp)[0]
-        #per1=sorted(select_periodoComp)[1]
-        
-        st.markdown("""<p style='font-size:12px'><b>Nota</b>: El cambio en la posición se compara respecto al periodo inmediatamente anterior</p>""",unsafe_allow_html=True)
+            per0=st.selectbox('Escoja un primer periodo',periodos_posiciones,0)
+        with col3b:
+            per1=st.selectbox('Escoja un segundo periodo para comparar',periodos_posiciones,12)
+#            if periodos_posiciones.index(select_periodoComp1)<len(periodos_posiciones)-1:
+#                second_period=periodos_posiciones[periodos_posiciones.index(select_periodoComp1)+1]
+#            else:
+#                second_period=select_periodoComp1
+                
+        #st.markdown("""<p style='font-size:12px'><b>Nota</b>: El cambio en la posición se compara respecto al periodo inmediatamente anterior</p>""",unsafe_allow_html=True)
             
-        prueba1=BaseFijosMunicipios[(BaseFijosMunicipios['periodo']==select_periodoComp1)&(BaseFijosMunicipios['municipio']!='COLOMBIA')].sort_values(by=['Indice_CRC'],ascending=False).reset_index()
+        prueba1=BaseFijosMunicipios[(BaseFijosMunicipios['periodo']==per0)&(BaseFijosMunicipios['municipio']!='COLOMBIA')].sort_values(by=['Indice_CRC'],ascending=False).reset_index()
         prueba1['posición']=prueba1.index+1
         prueba1=prueba1[['periodo','municipio','Indice_CRC','posición','download_speed','upload_speed','latency','jitter']]
         prueba1[['download_speed','upload_speed','latency','jitter']]=round(prueba1[['download_speed','upload_speed','latency','jitter']],2)
-        replace_colname={'download_speed':'Vel descarga '+select_periodoComp1,'upload_speed':'Vel carga '+select_periodoComp1,'latency':'Latencia '+select_periodoComp1,'jitter':'Jitter '+select_periodoComp1}
+        replace_colname={'download_speed':'Vel descarga '+per0,'upload_speed':'Vel carga '+per0,'latency':'Latencia '+per0,'jitter':'Jitter '+per0}
         prueba1=prueba1.rename(columns=replace_colname)
         
-        prueba2=BaseFijosMunicipios[(BaseFijosMunicipios['periodo']==second_period)&(BaseFijosMunicipios['municipio']!='COLOMBIA')].sort_values(by=['Indice_CRC'],ascending=False).reset_index()
+        prueba2=BaseFijosMunicipios[(BaseFijosMunicipios['periodo']==per1)&(BaseFijosMunicipios['municipio']!='COLOMBIA')].sort_values(by=['Indice_CRC'],ascending=False).reset_index()
         prueba2['posición']=prueba2.index+1
         prueba2=prueba2[['periodo','municipio','Indice_CRC','posición']]
 
