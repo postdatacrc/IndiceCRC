@@ -324,11 +324,33 @@ def cambiopos(x):
         y="""<span style='color:green'>+"""+str(x)+"""</span>"""
     return y           
 
-#@st.cache(ttl=24*3600,allow_output_mutation=True)
+@st.cache(allow_output_mutation=True)
 def ReadDataFijoMunicipios():
     FijosCapDep=pd.read_csv('https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/Bases/fixed_CapDep.csv',delimiter=';')    
     return FijosCapDep
 BaseFijosMunicipios=ReadDataFijoMunicipios()
+BaseFijosMunicipios['Indice_Descarga']=BaseFijosMunicipios['download_speed'].apply(DownloadFIJO)
+BaseFijosMunicipios['Indice_Carga']=BaseFijosMunicipios['upload_speed'].apply(UploadFIJO)
+BaseFijosMunicipios['Indice_Latencia']=BaseFijosMunicipios['latency'].apply(LatencyFIJO)
+BaseFijosMunicipios['Indice_Jitter']=BaseFijosMunicipios['jitter'].apply(JitterFIJO)
+BaseFijosMunicipios['Indice_CRC']=BaseFijosMunicipios['Indice_Descarga']+BaseFijosMunicipios['Indice_Carga']+BaseFijosMunicipios['Indice_Latencia']+BaseFijosMunicipios['Indice_Jitter']
+BaseFijosMunicipios[['download_speed','upload_speed','latency','jitter','Indice_CRC']]=BaseFijosMunicipios[['download_speed','upload_speed','latency','jitter','Indice_CRC']]
+BaseFijosMunicipios['municipio']=BaseFijosMunicipios['municipio'].apply(lambda x:unidecode.unidecode(x).upper())
+
+CAPDEP=['BOGOTA', 'CALI', 'CARTAGENA', 'MEDELLIN', 'ARAUCA',
+       'BARRANQUILLA', 'TUNJA', 'MANIZALES', 'FLORENCIA', 'YOPAL',
+       'POPAYAN', 'VALLEDUPAR', 'MONTERIA',
+       'MOCOA', 'NEIVA', 'RIOHACHA',
+       'SANTA MARTA', 'VILLAVICENCIO', 'PASTO', 'CUCUTA', 'ARMENIA',
+       'PEREIRA', 'SAN ANDRES', 'BUCARAMANGA', 'SINCELEJO', 'IBAGUE']
+
+BaseFijosMunicipios=BaseFijosMunicipios[BaseFijosMunicipios['municipio'].isin(CAPDEP)]
+error_armenia = (BaseFijosMunicipios['municipio'] == 'ARMENIA') & (BaseFijosMunicipios['region'] == 'Antioquia')
+error_florencia = (BaseFijosMunicipios['municipio'] == 'FLORENCIA') & (BaseFijosMunicipios['region'] == 'Cauca Department')
+error_SanAndres = (BaseFijosMunicipios['municipio'] == 'SAN ANDRES') & (BaseFijosMunicipios['region'] == 'Santander Department')
+comb_error=error_armenia | error_florencia | error_SanAndres
+
+BaseFijosMunicipios = BaseFijosMunicipios[~comb_error]
 
 #@st.cache(allow_output_mutation=True)
 def data_MuniColombia():    
