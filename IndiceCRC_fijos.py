@@ -324,7 +324,7 @@ def cambiopos(x):
         y="""<span style='color:green'>+"""+str(x)+"""</span>"""
     return y           
 
-#@st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True)
 def ReadDataFijoMunicipios():
     FijosCapDep=pd.read_csv('https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/Bases/CapFixed_Act.csv',delimiter=';')    
     return FijosCapDep
@@ -337,7 +337,7 @@ BaseFijosMunicipios['Indice_Jitter']=BaseFijosMunicipios['jitter'].apply(JitterF
 BaseFijosMunicipios['Indice_CRC']=BaseFijosMunicipios['Indice_Descarga']+BaseFijosMunicipios['Indice_Carga']+BaseFijosMunicipios['Indice_Latencia']+BaseFijosMunicipios['Indice_Jitter']
 
 
-@st.cache(allow_output_mutation=True)
+#@st.cache(allow_output_mutation=True)
 def data_MuniColombia():    
     with urllib.request.urlopen("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/co_2018_MGN_MPIO_POLITICO.geojson") as url:
         Muni = json.loads(url.read().decode())
