@@ -324,7 +324,7 @@ def cambiopos(x):
         y="""<span style='color:green'>+"""+str(x)+"""</span>"""
     return y           
 
-@st.cache(allow_output_mutation=True)
+#@st.cache(allow_output_mutation=True)
 def ReadDataFijoMunicipios():
     FijosCapDep=pd.read_csv('https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/Bases/CapFixed_Act.csv',delimiter=';')    
     return FijosCapDep
