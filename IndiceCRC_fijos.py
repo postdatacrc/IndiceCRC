@@ -217,7 +217,7 @@ def standardize_date(date):
     return date
 ## Definiciones Fijos
 def DownloadFIJO(x):
-    min_down=25;max_down=225;weight_down=0.40
+    min_down=25;max_down=221;weight_down=0.35
     if x>=max_down:
         y=100*weight_down
     elif x<=min_down:
@@ -226,7 +226,7 @@ def DownloadFIJO(x):
         y=100*weight_down*(x-min_down)/(max_down-min_down)
     return y
 def UploadFIJO(x):
-    min_up=5;max_up=190;weight_up=0.25
+    min_up=5;max_up=131;weight_up=0.3
     if x>=max_up:
         y=100*weight_up
     elif x<=min_up:
@@ -235,7 +235,7 @@ def UploadFIJO(x):
         y=100*weight_up*(x-min_up)/(max_up-min_up)
     return y
 def LatencyFIJO(x):
-    min_Lat=25;max_Lat=100;weight_Lat=0.25
+    min_Lat=4;max_Lat=50;weight_Lat=0.2
     if x>=max_Lat:
         y=0
     elif x<=min_Lat:
@@ -244,7 +244,7 @@ def LatencyFIJO(x):
         y=100*(max_Lat-x)*weight_Lat/(max_Lat-min_Lat)
     return y
 def JitterFIJO(x):
-    min_Jit=0;max_Jit=50;weight_Jit=0.10
+    min_Jit=1;max_Jit=100;weight_Jit=0.15
     if x>=max_Jit:
         y=0
     elif x<=min_Jit:
@@ -262,11 +262,11 @@ def lineatiempoMuni(df,yvalue):
             '<br><b>Operador</b>:<br><extra></extra>'+proveedor+
             '<br><b>Periodo</b>: %{x}<br>'+                         
             ParametroFijo+'-'+dict_parametros_unidad[ParametroFijo]+': %{y:.3f}<br>'))
-    fig.update_yaxes(tickfont=dict(family='Poppins', color='black', size=16),titlefont_size=16, title_text=ParametroFijo+' '+dict_parametros_unidad[ParametroFijo], row=1, col=1)
-    fig.update_xaxes(tickangle=0, tickfont=dict(family='Poppins', color='black', size=14),title_text='Fecha (mes/año)',row=1, col=1
+    fig.update_yaxes(tickfont=dict(family='Tahoma', color='black', size=16),titlefont_size=16, title_text=ParametroFijo+' '+dict_parametros_unidad[ParametroFijo], row=1, col=1)
+    fig.update_xaxes(tickangle=0, tickfont=dict(family='Tahoma', color='black', size=14),title_text='Fecha (mes/año)',row=1, col=1
     ,zeroline=True,linecolor = 'rgba(192, 192, 192, 0.8)',zerolinewidth=2)
     fig.update_layout(height=550,legend_title=None)
-    fig.update_layout(font_color="Black",font_family="Poppins",title_font_color="Black",titlefont_size=16,
+    fig.update_layout(font_color="Black",font_family="Tahoma",title_font_color="Black",titlefont_size=16,
     title={
     'text':'Evolución '+ParametroFijo+' por operador',
     'y':0.96,
@@ -326,33 +326,18 @@ def cambiopos(x):
 
 @st.cache(allow_output_mutation=True)
 def ReadDataFijoMunicipios():
-    FijosCapDep=pd.read_csv('https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/Bases/fixed_CapDep.csv',delimiter=';')    
+    FijosCapDep=pd.read_csv('https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/Bases/CapFixed_Act.csv',delimiter=';')    
     return FijosCapDep
 BaseFijosMunicipios=ReadDataFijoMunicipios()
+BaseFijosMunicipios.rename(columns={'Aggregate Date':'periodo','Location':'municipio','Download Speed Mbps':'download_speed','Upload Speed Mbps':'upload_speed','Minimum Latency':'latency','Minimum Jitter':'jitter'},inplace=True)
 BaseFijosMunicipios['Indice_Descarga']=BaseFijosMunicipios['download_speed'].apply(DownloadFIJO)
 BaseFijosMunicipios['Indice_Carga']=BaseFijosMunicipios['upload_speed'].apply(UploadFIJO)
 BaseFijosMunicipios['Indice_Latencia']=BaseFijosMunicipios['latency'].apply(LatencyFIJO)
 BaseFijosMunicipios['Indice_Jitter']=BaseFijosMunicipios['jitter'].apply(JitterFIJO)
 BaseFijosMunicipios['Indice_CRC']=BaseFijosMunicipios['Indice_Descarga']+BaseFijosMunicipios['Indice_Carga']+BaseFijosMunicipios['Indice_Latencia']+BaseFijosMunicipios['Indice_Jitter']
-BaseFijosMunicipios[['download_speed','upload_speed','latency','jitter','Indice_CRC']]=BaseFijosMunicipios[['download_speed','upload_speed','latency','jitter','Indice_CRC']]
-BaseFijosMunicipios['municipio']=BaseFijosMunicipios['municipio'].apply(lambda x:unidecode.unidecode(x).upper())
 
-CAPDEP=['BOGOTA', 'CALI', 'CARTAGENA', 'MEDELLIN', 'ARAUCA',
-       'BARRANQUILLA', 'TUNJA', 'MANIZALES', 'FLORENCIA', 'YOPAL',
-       'POPAYAN', 'VALLEDUPAR', 'MONTERIA',
-       'MOCOA', 'NEIVA', 'RIOHACHA',
-       'SANTA MARTA', 'VILLAVICENCIO', 'PASTO', 'CUCUTA', 'ARMENIA',
-       'PEREIRA', 'SAN ANDRES', 'BUCARAMANGA', 'SINCELEJO', 'IBAGUE']
 
-BaseFijosMunicipios=BaseFijosMunicipios[BaseFijosMunicipios['municipio'].isin(CAPDEP)]
-error_armenia = (BaseFijosMunicipios['municipio'] == 'ARMENIA') & (BaseFijosMunicipios['region'] == 'Antioquia')
-error_florencia = (BaseFijosMunicipios['municipio'] == 'FLORENCIA') & (BaseFijosMunicipios['region'] == 'Cauca Department')
-error_SanAndres = (BaseFijosMunicipios['municipio'] == 'SAN ANDRES') & (BaseFijosMunicipios['region'] == 'Santander Department')
-comb_error=error_armenia | error_florencia | error_SanAndres
-
-BaseFijosMunicipios = BaseFijosMunicipios[~comb_error]
-
-#@st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True)
 def data_MuniColombia():    
     with urllib.request.urlopen("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/co_2018_MGN_MPIO_POLITICO.geojson") as url:
         Muni = json.loads(url.read().decode())
@@ -550,14 +535,14 @@ if select_seccion=='Resultados':
                 
         #st.markdown("""<p style='font-size:12px'><b>Nota</b>: El cambio en la posición se compara respecto al periodo inmediatamente anterior</p>""",unsafe_allow_html=True)
             
-        prueba1=BaseFijosMunicipios[(BaseFijosMunicipios['periodo']==per0)&(BaseFijosMunicipios['municipio']!='COLOMBIA')].sort_values(by=['Indice_CRC'],ascending=False).reset_index()
+        prueba1=BaseFijosMunicipios[(BaseFijosMunicipios['periodo']==per0)&(BaseFijosMunicipios['municipio']!='COLOMBIA')].sort_values(by=['Indice_CRC'],ascending=False).reset_index().drop_duplicates(keep='first')
         prueba1['posición']=prueba1.index+1
         prueba1=prueba1[['periodo','municipio','Indice_CRC','posición','download_speed','upload_speed','latency','jitter']]
         prueba1[['download_speed','upload_speed','latency','jitter']]=round(prueba1[['download_speed','upload_speed','latency','jitter']],2)
         replace_colname={'download_speed':'Vel descarga '+per0,'upload_speed':'Vel carga '+per0,'latency':'Latencia '+per0,'jitter':'Jitter '+per0}
         prueba1=prueba1.rename(columns=replace_colname)
         
-        prueba2=BaseFijosMunicipios[(BaseFijosMunicipios['periodo']==per1)&(BaseFijosMunicipios['municipio']!='COLOMBIA')].sort_values(by=['Indice_CRC'],ascending=False).reset_index()
+        prueba2=BaseFijosMunicipios[(BaseFijosMunicipios['periodo']==per1)&(BaseFijosMunicipios['municipio']!='COLOMBIA')].sort_values(by=['Indice_CRC'],ascending=False).reset_index().drop_duplicates(keep='first')
         prueba2['posición']=prueba2.index+1
         prueba2=prueba2[['periodo','municipio','Indice_CRC','posición']]
 
@@ -566,7 +551,7 @@ if select_seccion=='Resultados':
         Compara_Ciudad['Cambio posición']=Compara_Ciudad['posición_y']-Compara_Ciudad['posición_x']
         Compara_Ciudad['Cambio posición']=Compara_Ciudad['Cambio posición'].apply(cambiopos)
         Compara_Ciudad=Compara_Ciudad.sort_values(by=['posición_x'],ascending=True)
-        
+
         
         BaseFijosMunicipios2=BaseFijosMunicipios.copy()[['periodo','municipio','Indice_CRC']]
                 
@@ -616,13 +601,13 @@ if select_seccion=='Resultados':
         for ciudad in Select_ciudCapital:
             dfFijoCiudCapi2=dfFijoCiudCapi[dfFijoCiudCapi['municipio']==ciudad]
             fig_ciudadesEv.add_trace(go.Scatter(x=dfFijoCiudCapi2['periodo'],y=dfFijoCiudCapi2[dict_parametros[param_Evo]],mode='lines+markers',name=ciudad,hovertemplate='<br><b>Ciudad: </b><extra></extra>'+ciudad+'<br>'+param_Evo+': %{y:.2f}'+'<br>'+'Periodo : %{x}'))
-        fig_ciudadesEv.update_yaxes(tickfont=dict(family='Poppins', color='black', size=16),titlefont_size=16, title_text=param_Evo+' '+dict_parametros_unidad[param_Evo], row=1, col=1)
-        fig_ciudadesEv.update_xaxes(tickangle=0, tickfont=dict(family='Poppins', color='black', size=14),title_text='Fecha (mes/año)',row=1, col=1
+        fig_ciudadesEv.update_yaxes(tickfont=dict(family='Tahoma', color='black', size=16),titlefont_size=18,titlefont_family='Tahoma',title_text=param_Evo+' '+dict_parametros_unidad[param_Evo], row=1, col=1)
+        fig_ciudadesEv.update_xaxes(tickangle=0, tickfont=dict(family='Tahoma', color='black', size=16),titlefont_size=18,titlefont_family='Tahoma',title_text='Fecha (mes/año)',row=1, col=1
         ,zeroline=True,linecolor = 'rgba(192, 192, 192, 0.8)',zerolinewidth=2)
         fig_ciudadesEv.update_layout(height=550,legend_title=None)
-        fig_ciudadesEv.update_layout(font_color="Black",font_family="Poppins",title_font_color="Black",titlefont_size=16,
+        fig_ciudadesEv.update_layout(font_color="Black",font_family="Tahoma",title_font_color="Black",titlefont_size=22,
         title={
-        'text':param_Evo+' por ciudad - Internet fijo',
+        'text':f'<b>{param_Evo} de Internet fijo por ciudad</b>',
         'y':0.9,
         'x':0.5,
         'xanchor': 'center',
@@ -638,5 +623,5 @@ if select_seccion=='Resultados':
         font=dict(size=11), xref='x domain',x=0.5,yref='y domain',y=-0.2) 
         st.plotly_chart(fig_ciudadesEv,use_container_width=True)
         st.download_button(label="Descargar CSV",data=convert_df(dfFijoCiudCapi),file_name='EvolucionIntFijo.csv',mime='text/csv')
-        st.markdown("<p style='font-size:12px;text-align:center'><b>Nota:</b> Resultados basados en el análisis realizado por CRC de los datos de Speedtest Intelligence® para 2023 - 2023/1S. </p>",unsafe_allow_html=True)
+        st.markdown("<p style='font-size:12px;text-align:center'><b>Nota:</b> Resultados basados en el análisis realizado por CRC de los datos de Speedtest Intelligence® para 2022 - 2023/1S. </p>",unsafe_allow_html=True)
             
