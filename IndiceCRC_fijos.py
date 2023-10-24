@@ -217,7 +217,7 @@ def standardize_date(date):
     return date
 ## Definiciones Fijos
 def DownloadFIJO(x):
-    min_down=25;max_down=221;weight_down=0.35
+    min_down=0;max_down=221;weight_down=0.4
     if x>=max_down:
         y=100*weight_down
     elif x<=min_down:
@@ -226,7 +226,7 @@ def DownloadFIJO(x):
         y=100*weight_down*(x-min_down)/(max_down-min_down)
     return y
 def UploadFIJO(x):
-    min_up=5;max_up=131;weight_up=0.3
+    min_up=0;max_up=131;weight_up=0.25
     if x>=max_up:
         y=100*weight_up
     elif x<=min_up:
