@@ -506,7 +506,7 @@ if select_seccion=='Definición':
     col1,col2,col3=st.columns(3)
     with col2:
         st.markdown("<p style='font-size:11px;text-align:center'><b>Tabla 1:</b> Valores de referencia para el cálculo del ICE para el servicio de Internet fijo</p>",unsafe_allow_html=True)
-        st.image("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/ICE%20Fijo2.png")
+        st.image("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/ICE_fijos_act.png")
         
 if select_seccion=='Resultados':
     st.markdown("")
