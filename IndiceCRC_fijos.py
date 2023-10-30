@@ -360,7 +360,7 @@ hide_dataframe_row_index = """
 # Inject CSS with Markdown
 st.markdown(hide_dataframe_row_index, unsafe_allow_html=True)
 
-st.markdown("<center><h2>Índice de calidad de la experiencia - ICE</h2></center>",unsafe_allow_html=True)
+st.markdown("<center><h2>Índice de calidad de la experiencia de Internet Fijo - ICE</h2></center>",unsafe_allow_html=True)
 select_seccion = st.selectbox('Escoja la sección del reporte',['Definición','Resultados'])   
 
 
@@ -417,7 +417,7 @@ considerando para tal efecto los cuatro (4) siguientes parámetros:
 <li>Velocidad de descarga
 <li>Velocidad de carga
 <li>Latencia
-<li>Jitter
+<li>Jitter (Fluctuación de fase)
 </ul>
 </center>
 </p>
@@ -495,18 +495,126 @@ if select_seccion=='Definición':
         with st.expander('Latencia'):
             st.markdown(Lat_Info,unsafe_allow_html=True)       
     with col2:
-        with st.expander('Jitter'):
+        with st.expander('Jitter (Fluctuación de fase)'):
             st.markdown(Jitter_Info,unsafe_allow_html=True)
     col1,col2=st.columns(2) 
 
     st.markdown(r"""<p style='text-align:justify'>El cálculo del ICE está conformado por la sumatoria de la relación del valor de la medición y el valor de normalización y 
-    el producto con el ponderador de cada uno de los indicadores. En las tablas 1 y 2 se pueden observar estos ponderadores, así como los valores de 
+    el producto con el ponderador de cada uno de los indicadores. En las tabla mostrada a continuación se pueden observar estos ponderadores, así como los valores de 
     normalización indicados previamente.</p>""",unsafe_allow_html=True)    
     
     col1,col2,col3=st.columns(3)
     with col2:
-        st.markdown("<p style='font-size:11px;text-align:center'><b>Tabla 1:</b> Valores de referencia para el cálculo del ICE para el servicio de Internet fijo</p>",unsafe_allow_html=True)
-        st.image("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/ICE_fijos_act.png")
+        #st.markdown("<p style='font-size:11px;text-align:center'><b>Tabla 1:</b> Valores de referencia para el cálculo del ICE para el servicio de Internet fijo</p>",unsafe_allow_html=True)
+        #st.image("https://raw.githubusercontent.com/postdatacrc/IndiceCRC/main/ICE_fijos_act.png")
+        st.markdown(r"""
+            <table style="width: 4.8e+2pt;border-collapse:collapse;border:none;">
+                <tbody>
+                    <tr>
+                        <td rowspan="2" style="width: 94.25pt;border: 1pt solid windowtext;background: rgb(17, 209, 215);padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><strong><span style='font-size:19px;font-family:"Calibri",sans-serif;color:white;'>Indicador</span></strong></p>
+                        </td>
+                        <td colspan="4" style="width: 306pt;border-top: 1pt solid windowtext;border-right: 1pt solid windowtext;border-bottom: 1pt solid windowtext;border-image: initial;border-left: none;background: rgb(17, 209, 215);padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><strong><span style='font-size:19px;font-family:"Calibri",sans-serif;color:white;'>Valor para normalizaci&oacute;n</span></strong></p>
+                        </td>
+                        <td rowspan="2" style="width: 81pt;border-top: 1pt solid windowtext;border-right: 1pt solid windowtext;border-bottom: 1pt solid windowtext;border-image: initial;border-left: none;background: rgb(17, 209, 215);padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><strong><span style='font-size:19px;font-family:"Calibri",sans-serif;color:white;'>Ponderador</span></strong></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 54pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;background: rgb(17, 209, 215);padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><strong><span style='font-family:"Calibri",sans-serif;color:white;'>M&iacute;nimo</span></strong></p>
+                        </td>
+                        <td style="width: 126pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;background: rgb(17, 209, 215);padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><strong><span style='font-family:"Calibri",sans-serif;color:white;'>Referencia</span></strong></p>
+                        </td>
+                        <td style="width: 54pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;background: rgb(17, 209, 215);padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><strong><span style='font-family:"Calibri",sans-serif;color:white;'>M&aacute;ximo</span></strong></p>
+                        </td>
+                        <td style="width: 72pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;background: rgb(17, 209, 215);padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><strong><span style='font-family:"Calibri",sans-serif;color:white;'>Referencia</span></strong></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 94.25pt;border-right: 1pt solid windowtext;border-bottom: 1pt solid windowtext;border-left: 1pt solid windowtext;border-image: initial;border-top: none;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;'><span style='font-family:"Calibri",sans-serif;color:black;'>Velocidad de descarga (Mbps)</span></p>
+                        </td>
+                        <td style="width: 54pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><span style="color:black;">&nbsp;</span></p>
+                        </td>
+                        <td style="width: 126pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><span style="color:black;">&nbsp;</span></p>
+                        </td>
+                        <td style="width: 54pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><span style='font-family:"Calibri",sans-serif;color:black;'>221</span></p>
+                        </td>
+                        <td style="width: 72pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><span style='font-family:"Calibri",sans-serif;color:black;'>Chile</span></p>
+                        </td>
+                        <td style="width: 81pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><span style='font-family:"Calibri",sans-serif;color:black;'>40%</span></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 94.25pt;border-right: 1pt solid windowtext;border-bottom: 1pt solid windowtext;border-left: 1pt solid windowtext;border-image: initial;border-top: none;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;'><span style='font-family:"Calibri",sans-serif;color:black;'>Velocidad de carga (Mbps)</span></p>
+                        </td>
+                        <td style="width: 54pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><span style="color:black;">&nbsp;</span></p>
+                        </td>
+                        <td style="width: 126pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><span style="color:black;">&nbsp;</span></p>
+                        </td>
+                        <td style="width: 54pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><span style='font-family:"Calibri",sans-serif;color:black;'>131</span></p>
+                        </td>
+                        <td style="width: 72pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><span style='font-family:"Calibri",sans-serif;color:black;'>Chile</span></p>
+                        </td>
+                        <td style="width: 81pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><span style='font-family:"Calibri",sans-serif;color:black;'>25%</span></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 94.25pt;border-right: 1pt solid windowtext;border-bottom: 1pt solid windowtext;border-left: 1pt solid windowtext;border-image: initial;border-top: none;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;'><span style='font-family:"Calibri",sans-serif;color:black;'>Latencia (ms)</span></p>
+                        </td>
+                        <td style="width: 54pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><span style='font-family:"Calibri",sans-serif;color:black;'>4</span></p>
+                        </td>
+                        <td style="width: 126pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><span style='font-family:"Calibri",sans-serif;color:black;'>Lituania</span></p>
+                        </td>
+                        <td style="width: 54pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><span style='font-family:"Calibri",sans-serif;color:black;'>50</span></p>
+                        </td>
+                        <td rowspan="2" style="width: 72pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><span style='font-family:"Calibri",sans-serif;color:black;'>Res. 6890</span></p>
+                        </td>
+                        <td style="width: 81pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><span style='font-family:"Calibri",sans-serif;color:black;'>20%</span></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 94.25pt;border-right: 1pt solid windowtext;border-bottom: 1pt solid windowtext;border-left: 1pt solid windowtext;border-image: initial;border-top: none;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;'><span style='font-family:"Calibri",sans-serif;color:black;'>Jitter (ms)</span></p>
+                        </td>
+                        <td style="width: 54pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><span style='font-family:"Calibri",sans-serif;color:black;'>1</span></p>
+                        </td>
+                        <td style="width: 126pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><span style='font-family:"Calibri",sans-serif;color:black;'>Lituania/Suecia/Francia</span></p>
+                        </td>
+                        <td style="width: 54pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><span style='font-family:"Calibri",sans-serif;color:black;'>100</span></p>
+                        </td>
+                        <td style="width: 81pt;border-top: none;border-left: none;border-bottom: 1pt solid windowtext;border-right: 1pt solid windowtext;padding: 0cm 5.4pt;vertical-align: middle;">
+                            <p style='margin:0cm;font-size:16px;font-family:"Times New Roman",serif;text-align:center;'><span style='font-family:"Calibri",sans-serif;color:black;'>15%</span></p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        """,unsafe_allow_html=True)
         
 if select_seccion=='Resultados':
     st.markdown("")
