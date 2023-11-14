@@ -235,7 +235,7 @@ def UploadFIJO(x):
         y=100*weight_up*(x-min_up)/(max_up-min_up)
     return y
 def LatencyFIJO(x):
-    min_Lat=4;max_Lat=50;weight_Lat=0.2
+    min_Lat=4;max_Lat=100;weight_Lat=0.2
     if x>=max_Lat:
         y=0
     elif x<=min_Lat:
@@ -244,7 +244,7 @@ def LatencyFIJO(x):
         y=100*(max_Lat-x)*weight_Lat/(max_Lat-min_Lat)
     return y
 def JitterFIJO(x):
-    min_Jit=1;max_Jit=100;weight_Jit=0.15
+    min_Jit=1;max_Jit=50;weight_Jit=0.15
     if x>=max_Jit:
         y=0
     elif x<=min_Jit:
